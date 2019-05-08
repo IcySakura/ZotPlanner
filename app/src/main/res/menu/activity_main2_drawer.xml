@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:showIn="navigation_view">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/list_view"
+            android:icon="@drawable/list"
+            android:title="@string/list_view" />
+        <item
+            android:id="@+id/calendar_view"
+            android:icon="@drawable/calendar"
+            android:title="@string/calendar_view" />
+        <item
+            android:id="@+id/my_eee"
+            android:icon="@drawable/uci"
+            android:title="@string/home" />
+    </group>
+
+    <item android:title="@string/others">
+        <menu>
+            <item
+                android:id="@+id/main_settings"
+                android:icon="@drawable/settings"
+                android:title="@string/settings" />
+            <item
+                android:id="@+id/donate"
+                android:icon="@drawable/donate"
+                android:title="@string/donate" />
+            <item
+                android:id="@+id/main_settings_about"
+                android:icon="@drawable/info"
+                android:title="@string/main_settings_about_textview"/>
+        </menu>
+    </item>
+
+</menu>

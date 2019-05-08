@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SelectedCourseListWeekView"
+    android:animateLayoutChanges="true">
+
+    <android.support.v4.widget.DrawerLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/selected_course_list_week_view_drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fitsSystemWindows="true"
+        tools:openDrawer="start">
+
+        <android.support.design.widget.CoordinatorLayout
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:context=".SelectedCourseListWeekView">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <android.support.design.widget.AppBarLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:theme="@style/AppTheme.AppBarOverlay">
+
+                        <android.support.v7.widget.Toolbar
+                            android:id="@+id/selected_course_list_week_view_toolbar"
+                            android:layout_width="match_parent"
+                            android:layout_height="?attr/actionBarSize"
+                            android:background="?attr/colorPrimary"
+                            app:popupTheme="@style/AppTheme.PopupOverlay" />
+
+                    </android.support.design.widget.AppBarLayout>
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <com.wang.avi.AVLoadingIndicatorView
+                            android:id="@+id/selected_course_list_calendar_view_loading_avi"
+                            android:visibility="gone"
+                            android:paddingTop="?attr/actionBarSize"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:indicatorName="LineScaleIndicator"
+                            app:indicatorColor="#000000"
+                            android:layout_centerHorizontal="true"
+                            />
+
+                        <com.alamkanak.weekview.WeekView
+                            android:id="@+id/selected_course_list_week_view"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:background="?android:attr/selectableItemBackground"
+                            app:eventTextColor="@android:color/white"
+                            app:textSize="12sp"
+                            app:hourHeight="60dp"
+                            app:headerColumnPadding="8dp"
+                            app:headerColumnTextColor="@color/toolbar_text"
+                            app:headerRowPadding="12dp"
+                            app:columnGap="8dp"
+                            app:noOfVisibleDays="3"
+                            app:headerRowBackgroundColor="@color/toolbar"
+                            app:dayBackgroundColor="#05000000"
+                            app:todayBackgroundColor="#1848adff"
+                            app:headerColumnBackground="#ffffffff"
+                            app:todayHeaderTextColor="@color/accent" />
+
+                    </RelativeLayout>
+
+                </LinearLayout>
+
+        </android.support.design.widget.CoordinatorLayout>
+
+        <android.support.design.widget.NavigationView
+            android:id="@+id/selected_course_list_week_view_nav_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:fitsSystemWindows="true"
+            app:headerLayout="@layout/nav_header_main"
+            app:menu="@menu/activity_main2_drawer" />
+
+    </android.support.v4.widget.DrawerLayout>
+
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/selected_course_list_calendar_view_fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/fab_margin"
+        app:srcCompat="@android:drawable/ic_input_add" />
+
+</android.support.design.widget.CoordinatorLayout>

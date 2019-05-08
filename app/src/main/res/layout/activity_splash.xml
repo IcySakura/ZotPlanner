@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".SplashActivity"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_gravity="center_horizontal">
+
+        <com.wang.avi.AVLoadingIndicatorView
+            android:id="@+id/splash_activity_loading_avi"
+            android:visibility="gone"
+            android:paddingTop="?attr/actionBarSize"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:indicatorName="LineScaleIndicator"
+            app:indicatorColor="#000000"
+            android:paddingBottom="100dp"
+            android:layout_gravity="bottom"
+            />
+
+    </LinearLayout>
+
+</LinearLayout>

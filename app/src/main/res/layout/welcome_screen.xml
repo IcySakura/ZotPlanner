@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/welcome_screen_linearlayout"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:visibility="gone"
+    android:animateLayoutChanges="true">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/welcome_words"
+        android:textSize="30sp"
+        android:textColor="#000000"
+        android:layout_marginTop="40sp"
+        android:textAlignment="center"/>
+
+    <com.dx.dxloadingbutton.lib.LoadingButton
+        android:id="@+id/loading_btn"
+        android:layout_gravity="center"
+        android:layout_width="228dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="150sp"
+        app:lb_resetAfterFailed="true"
+        app:lb_btnRippleColor="#000000"
+        app:lb_btnDisabledColor="#cccccc"
+        app:lb_btnText="@string/welcome_button_text"
+        />
+
+</LinearLayout>
