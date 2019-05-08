@@ -13,7 +13,7 @@ E-mail: lyx981mike@gmail.com
 
 Avaibable in Chinese, English, and Japanese (Coming soon).
 
-Latest Version: Beta v1.0.8
+Latest Version: Beta v1.1.0
 
 Beta v1.0.0:
 -	App released in beta version.
@@ -53,6 +53,9 @@ Beta v1.0.1:
 
 11/05/2018	Beta v1.0.9
 -	We have fixed a problem that might cause incorrect display in calendar view.
+
+12/10/2018	Beta v1.1.0
+-	Bug fixes
 
 Features:
 + Private --- the connections are established directly between your device and the official UCI server, and none of your data will be uploaded.
