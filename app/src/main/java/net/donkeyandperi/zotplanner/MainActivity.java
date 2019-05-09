@@ -5,28 +5,24 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
-import android.graphics.drawable.ShapeDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.transition.Transition;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import android.util.Log;
 import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.navigation.NavigationView;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.animation.Animation;
-import android.view.animation.AnimationSet;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -34,16 +30,12 @@ import com.dx.dxloadingbutton.lib.LoadingButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.wang.avi.AVLoadingIndicatorView;
-import com.yanzhenjie.recyclerview.swipe.SwipeMenu;
-import com.yanzhenjie.recyclerview.swipe.SwipeMenuBridge;
-import com.yanzhenjie.recyclerview.swipe.SwipeMenuCreator;
-import com.yanzhenjie.recyclerview.swipe.SwipeMenuItem;
-import com.yanzhenjie.recyclerview.swipe.SwipeMenuItemClickListener;
-import com.yanzhenjie.recyclerview.swipe.SwipeMenuRecyclerView;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
+import com.yanzhenjie.recyclerview.OnItemMenuClickListener;
+import com.yanzhenjie.recyclerview.SwipeMenu;
+import com.yanzhenjie.recyclerview.SwipeMenuBridge;
+import com.yanzhenjie.recyclerview.SwipeMenuCreator;
+import com.yanzhenjie.recyclerview.SwipeMenuItem;
+import com.yanzhenjie.recyclerview.SwipeRecyclerView;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -55,7 +47,7 @@ public class MainActivity extends AppCompatActivity
     private boolean success = false;
     private Intent intent;
     private MyApp app;
-    private SwipeMenuRecyclerView recyclerView;
+    private SwipeRecyclerView recyclerView;
     private AVLoadingIndicatorView avLoadingIndicatorView;
     private Handler handler;
     private LinearLayout welcomeScreen;
@@ -80,7 +72,7 @@ public class MainActivity extends AppCompatActivity
         app.readCachedInstructionBeginAndEndDates();
         selectedCourseListAdapter = new SelectedCourseListAdapter(app);
 
-        recyclerView = (SwipeMenuRecyclerView) findViewById(R.id.selected_course_list_recycler_view);
+        recyclerView = (SwipeRecyclerView) findViewById(R.id.selected_course_list_recycler_view);
         avLoadingIndicatorView = (AVLoadingIndicatorView) findViewById(R.id.selected_course_list_loading_avi);
         welcomeScreen = (LinearLayout) findViewById(R.id.welcome_screen_linearlayout);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.selected_course_list_refresh_layout);
@@ -158,6 +150,14 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onResume() {
         super.onResume();
+
+        /*
+        if(app.isLanguageJustChanged()){
+            app.setIsLanguageJustChanged(false);
+            onCreate(null);
+        }
+        */
+
         Log.i("Notification ", "onResume");
         welcomeScreen.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
@@ -169,19 +169,18 @@ public class MainActivity extends AppCompatActivity
             navigationView.setCheckedItem(R.id.list_view);
         }
         Log.i("FinalIsListChanged ", String.valueOf(app.isSelectedCourseListChanged()));
-        if(app.isSelectedCourseListChanged()){
-            processorRecyclerView();
-        }
+        processRecyclerView();
         Log.i("FinalSelectedListSize ", String.valueOf(app.getSelectedCourseList().size()));
     }
 
-    private void processorRecyclerView() {
+    private void processRecyclerView() {
         List<Course> selectedCourseList = app.getSelectedCourseList();
         Log.i("SelectedCourseListSize ", String.valueOf(selectedCourseList.size()));
         if (!selectedCourseList.isEmpty()) {
-            if(app.getCourseListRefreshedBySplashActivity()){
+            swipeRefreshLayout.setEnabled(true);
+            if(app.isCourseListRefreshedBySplashActivity()){
                 endLoadingAnimationQuickSuccess();
-                app.setCourseListRefreshedBySplashActivity(false);
+                app.setIsCourseListRefreshedBySplashActivity(false);
                 return;
             }
             app.setIsCurrentlyProcessingSelectedListRecyclerview(true);
@@ -239,8 +238,9 @@ public class MainActivity extends AppCompatActivity
         } else {
             recyclerView.setVisibility(View.GONE);
             fab.hide();
-            Log.i("processorRecyclerView ", "fab is going to hide.");
+            Log.i("processRecyclerView ", "fab is going to hide.");
             welcomeScreen.setVisibility(View.VISIBLE);
+            swipeRefreshLayout.setEnabled(false);
         }
     }
 
@@ -299,7 +299,7 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.menu_main_refresh) {
-            processorRecyclerView();
+            processRecyclerView();
             return true;
         } else if (id == R.id.clear_all_selected_course) {
             if (app.getSelectedCourseList().isEmpty()) {
@@ -414,13 +414,12 @@ public class MainActivity extends AppCompatActivity
                 swipeRightMenu.addMenuItem(deleteItem);
             }
         };
-        SwipeMenuItemClickListener swipeMenuItemClickListener = new SwipeMenuItemClickListener() {
+        OnItemMenuClickListener swipeMenuItemClickListener = new OnItemMenuClickListener() {
             @Override
-            public void onItemClick(SwipeMenuBridge menuBridge) {
+            public void onItemClick(SwipeMenuBridge menuBridge, int adapterPosition) {
                 menuBridge.closeMenu();
-                int direction = menuBridge.getDirection(); // 左侧还是右侧菜单。
-                int adapterPosition = menuBridge.getAdapterPosition(); // RecyclerView的Item的position。
-                int menuPosition = menuBridge.getPosition(); // 菜单在RecyclerView的Item中的Position。
+                int direction = menuBridge.getDirection(); // Left menu or right menu
+                int menuPosition = menuBridge.getPosition(); // The position of the item in recyclerView
                 Log.i("Direction ", String.valueOf(direction));
                 Log.i("AdapterPosistion ", String.valueOf(adapterPosition));
                 for(Course course: app.getSelectedCourseList()){
@@ -451,7 +450,7 @@ public class MainActivity extends AppCompatActivity
             }
         };
         recyclerView.setSwipeMenuCreator(swipeMenuCreator);
-        recyclerView.setSwipeMenuItemClickListener(swipeMenuItemClickListener);
+        recyclerView.setOnItemMenuClickListener(swipeMenuItemClickListener);
     }
 
     public void setUpSwipeRefreshLayout(){
@@ -459,7 +458,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onRefresh() {
                 if(!app.isCurrentlyProcessingSelectedListRecyclerview()){
-                    processorRecyclerView();
+                    processRecyclerView();
                 } else {
                     swipeRefreshLayout.setRefreshing(false);
                 }

@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:animateLayoutChanges="true">
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/course_dialog_recycler_view"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>

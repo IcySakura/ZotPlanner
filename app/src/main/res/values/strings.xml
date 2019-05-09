@@ -6,7 +6,7 @@
     <string name="settings_about_send_email_chooser">Send Email</string>
     <string name="settings_about_email_title">Question About ZotPlanner (Sent Through App)</string>
     <string name="settings_about_email_detail">From Beta Version：</string>
-    <string name="settings_about_copyright_information">All rights reserved by 2Idiots</string>
+    <string name="settings_about_copyright_information">All rights reserved by IcySakura</string>
     <string name="action_settings">Settings</string>
     <string name="clear_all_selected_courses">Clear All</string>
     <string name="success_clear">Cleared!</string>

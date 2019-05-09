@@ -2,16 +2,16 @@ package net.donkeyandperi.zotplanner;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+
+import androidx.annotation.Nullable;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-public class NotificationSettingsTimeInterval extends AppCompatActivity {
+public class NotificationSettingsTimeInterval_Abandoned extends AppCompatActivity {
 
     private MyApp app;
     private Context context = this;

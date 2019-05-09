@@ -8,11 +8,11 @@
     
     <RadioGroup
         android:id="@+id/language_settings_radiogroup"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="15sp"
         android:layout_marginStart="20sp"
-        android:layout_marginBottom="30sp"
+        android:layout_marginBottom="10sp"
         android:layout_marginTop="10sp"
         >
         <RadioButton
@@ -22,16 +22,22 @@
             android:text="@string/default_language"
             />
         <RadioButton
+            android:id="@+id/language_settings_chinese_simplified"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="中文 (简体)"
+            />
+        <RadioButton
             android:id="@+id/language_settings_english_us"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="English (United States)"
             />
         <RadioButton
-            android:id="@+id/language_settings_chinese_simplified"
+            android:id="@+id/language_settings_japanese"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="中文 (简体)"
+            android:text="日本語"
             />
     </RadioGroup>
 

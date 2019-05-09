@@ -15,8 +15,13 @@ Avaibable in Chinese, English, and Japanese (Coming soon).
 
 Latest Version: Beta v1.1.0
 
-12/10/2018	Beta v1.1.0
--	Bug fixes
+05/08/2019	Beta v1.1.0
+-	We have fixed the bug in changing languages.
+-	“こんにちは！”, Japanese is now added to the App, but it is still in Alpha Phrase.
+-	We have redesigned some pop-up views in the settings, so they now look better.
+-	We are working on polishing codes to fix more bugs and prepare for the next major redesign!
+-	Limited Time: we have expanded our App to support API level as low as Android 5.0! (However, we do not promise that our App will work smoothly and properly.)
+-	We are finally at the phase of releasing stable version of the App, thanks for testing in this long long period!
 
 11/05/2018	Beta v1.0.9
 -	We have fixed a problem that might cause incorrect display in calendar view.

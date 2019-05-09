@@ -6,7 +6,7 @@
     <string name="settings_about_send_email_chooser">发送邮件</string>
     <string name="settings_about_email_title">关于Zot课程表的问题（来自应用内部）</string>
     <string name="settings_about_email_detail">来自Beta版本：</string>
-    <string name="settings_about_copyright_information">2Idiots保留所有权利</string>
+    <string name="settings_about_copyright_information">IcySakura保留所有权利</string>
     <string name="action_settings">设置</string>
     <string name="clear_all_selected_courses">清除所有已选课程</string>
     <string name="success_clear">清除成功！</string>
@@ -44,7 +44,7 @@
     <string name="course_dialog_nor">正常人数: %1$s</string>
     <string name="course_dialog_rstr">限制: %1$s</string>
     <string name="course_dialog_status">状态: %1$s</string>
-    <string name="selected_course_list_nothing_text">尚未添加任何课程</string>
+    <string name="selected_course_list_nothing_text">未添加任何课程</string>
     <string name="settings_language">语言</string>
     <string name="current_language_settings">当前语言: %1$s</string>
     <string name="language_settings_dialog_label">语言设置</string>
@@ -77,7 +77,7 @@
     <string name="notification_settings_time_status_option_Waitl">排队</string>
     <string name="notification_settings_time_status_option_NewOnly">仅限新转学生</string>
     <string name="notification_settings_time_status_option_full">满员</string>
-    <string name="notification_settings_time_status_option_cannot_be_empty">检测状态不能为空，“开发”已被自动添加！</string>
+    <string name="notification_settings_time_status_option_cannot_be_empty">检测状态不能为空，“开放”已被自动添加！</string>
     <string name="navigation_drawer_open">打开导航栏</string>
     <string name="navigation_drawer_close">关闭导航栏</string>
     <string name="nav_header_title">导航栏</string>

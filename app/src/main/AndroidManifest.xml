@@ -33,7 +33,7 @@
             android:launchMode="singleTask"
             android:theme="@style/NormalDialogStyle" />
         <activity
-            android:name=".LanguageSettingsDialog"
+            android:name=".LanguageSettingsDialog_Abandoned"
             android:label="@string/language_settings_dialog_label"
             android:launchMode="singleTask"
             android:theme="@style/NormalDialogStyle" />
@@ -48,12 +48,12 @@
             android:launchMode="singleTask"
             android:theme="@style/NormalDialogStyle" />
         <activity
-            android:name=".NotificationSettingsTime"
+            android:name=".NotificationSettings"
             android:label="@string/notification_settings_time_label"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".NotificationSettingsTimeInterval"
+            android:name=".NotificationSettingsTimeInterval_Abandoned"
             android:label="@string/notification_settings_time_interval_label"
             android:launchMode="singleTask"
             android:theme="@style/NormalDialogStyle" />
@@ -75,7 +75,7 @@
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".NotificationSettingsTimeStatusOption"
+            android:name=".NotificationSettingsTimeStatusOption_Abandoned"
             android:label="notification_settings_time_current_status_options"
             android:launchMode="singleTask"
             android:theme="@style/NormalDialogStyle" />

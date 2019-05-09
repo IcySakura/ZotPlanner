@@ -16,6 +16,7 @@ public class SingleCourse {
     private boolean isSummer = false;
     private List<String> courseQuarterBeginDate = new ArrayList<>();
     private List<String> courseQuarterEndDate = new ArrayList<>();
+    private boolean isFollowing = false;
 
     public void setCourseName(String courseName)
     {
@@ -118,4 +119,11 @@ public class SingleCourse {
         courseQuarterEndDate = cqed;
     }
 
+    public void setFollowing(boolean following) {
+        isFollowing = following;
+    }
+
+    public boolean isFollowing() {
+        return isFollowing;
+    }
 }

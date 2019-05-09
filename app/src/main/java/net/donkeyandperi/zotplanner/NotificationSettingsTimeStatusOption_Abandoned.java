@@ -2,15 +2,15 @@ package net.donkeyandperi.zotplanner;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
-import android.util.Log;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import android.widget.CheckBox;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class NotificationSettingsTimeStatusOption extends AppCompatActivity {
+public class NotificationSettingsTimeStatusOption_Abandoned extends AppCompatActivity {
 
     private MyApp app;
     private Context context = this;

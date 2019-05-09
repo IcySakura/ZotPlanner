@@ -10,8 +10,9 @@ public class CourseStaticData {
     public static String defaultClassStatusOpen = "OPEN";
     public static String defaultClassStatusNewOnly = "NewOnly";
     public static String defaultClassStatusFull = "FULL";
-    public static String mainlandChinese = "zh-cn";
+    public static String simplifiedChinese = "zh-cn";
     public static String unitedStatesEnglish = "en-us";
+    public static String japaneseJapan = "ja-rJP";
     public static String defaultLanguage = "default";
     public static int checkingTimeInterval1Min = 1;
     public static int checkingTimeInterval3Min = 3;

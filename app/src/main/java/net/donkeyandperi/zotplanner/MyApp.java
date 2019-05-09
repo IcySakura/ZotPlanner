@@ -8,11 +8,11 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
+import android.os.Build;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
@@ -51,7 +51,8 @@ public class MyApp extends Application {
     private boolean keepNotifyMeSwitch = false;
     private boolean isCurrentlyProcessingSelectedListRecyclerview = false;
     private Integer lastCheckedItemInNavView = null;
-    private Boolean courseListRefreshedBySplashActivity = false;
+    private Boolean isCourseListRefreshedBySplashActivity = false;
+    private Boolean isLanguageJustChanged = false;
 
     public void setRegNormalPage(Document regNormalPage){
         this.regNormalPage = regNormalPage;
@@ -245,8 +246,12 @@ public class MyApp extends Application {
         saveData("language_settings", "app_language", targetLanguage);
     }
 
+    public String getSavedLanguage(){
+        return (String)readData("language_settings", "app_language", new TypeToken<String>() {}.getType());
+    }
+
     public void setLanguage(Context context){
-        String targetLanguage = (String)readData("language_settings", "app_language", new TypeToken<String>() {}.getType());
+        String targetLanguage = getSavedLanguage();
         Log.d("Myles", "setLanguage: The language is going to be set as: " + targetLanguage);
         if(targetLanguage != null){
             currentLanguage = targetLanguage;
@@ -261,13 +266,16 @@ public class MyApp extends Application {
         Log.d("Myles", "changeLanguage: The language is going to be: " + targetLanguage);
         switch (targetLanguage){
             case "default":
-                config.locale = Locale.getDefault();
+                config.setLocale(Locale.getDefault());
                 break;
             case "zh-cn":
-                config.locale = Locale.SIMPLIFIED_CHINESE;
+                config.setLocale(Locale.SIMPLIFIED_CHINESE);
                 break;
             case "en-us":
-                config.locale = Locale.ENGLISH;
+                config.setLocale(Locale.ENGLISH);
+                break;
+            case "ja-rJP":
+                config.setLocale(Locale.JAPAN);
                 break;
             default:
                 config.locale = Locale.getDefault();
@@ -554,6 +562,7 @@ public class MyApp extends Application {
     }
 
     public List<String> getNotificationWhenStatus() {
+        readNotificationWhenStatus();
         return notificationWhenStatus;
     }
 
@@ -610,11 +619,27 @@ public class MyApp extends Application {
         return lastCheckedItemInNavView;
     }
 
-    public void setCourseListRefreshedBySplashActivity(Boolean clrbsa){
-        courseListRefreshedBySplashActivity = clrbsa;
+    public void setIsCourseListRefreshedBySplashActivity(Boolean clrbsa){
+        isCourseListRefreshedBySplashActivity = clrbsa;
     }
 
-    public Boolean getCourseListRefreshedBySplashActivity(){
-        return courseListRefreshedBySplashActivity;
+    public Boolean isCourseListRefreshedBySplashActivity(){
+        return isCourseListRefreshedBySplashActivity;
     }
+
+    public void setIsLanguageJustChanged(Boolean isLanguageJustChanged){
+        this.isLanguageJustChanged = isSelectedCourseListChanged;
+    }
+
+    public Boolean isLanguageJustChanged(){
+        return isLanguageJustChanged;
+    }
+
+    public Context updateResources(Context context) {
+
+        setLanguage(context);
+
+        return context;
+    }
+
 }

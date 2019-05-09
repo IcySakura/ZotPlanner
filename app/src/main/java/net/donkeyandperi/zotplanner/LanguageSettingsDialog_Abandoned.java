@@ -2,22 +2,21 @@ package net.donkeyandperi.zotplanner;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.provider.SyncStateContract;
-import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import java.util.Locale;
-
-public class LanguageSettingsDialog extends AppCompatActivity {
+public class LanguageSettingsDialog_Abandoned extends AppCompatActivity {
 
     private MyApp app;
     private Context context = this;
     private boolean checkedByDefault = false;
     private RadioButton englishUSbtn;
     private RadioButton chineseSimplifiedbtn;
+    private RadioButton japanesebtn;
     private RadioButton defaultBtn;
 
     @Override
@@ -29,6 +28,7 @@ public class LanguageSettingsDialog extends AppCompatActivity {
         RadioGroup radioGroup = (RadioGroup) findViewById(R.id.language_settings_radiogroup);
         englishUSbtn = (RadioButton) findViewById(R.id.language_settings_english_us);
         chineseSimplifiedbtn = (RadioButton) findViewById(R.id.language_settings_chinese_simplified);
+        japanesebtn = (RadioButton) findViewById(R.id.language_settings_japanese);
         defaultBtn = (RadioButton) findViewById(R.id.language_settings_default);
         radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
@@ -44,8 +44,12 @@ public class LanguageSettingsDialog extends AppCompatActivity {
                         notification = "App Language will be changed to English (US) after relaunch";
                         break;
                     case R.id.language_settings_chinese_simplified:
-                        app.saveLanguage(CourseStaticData.mainlandChinese);
+                        app.saveLanguage(CourseStaticData.simplifiedChinese);
                         notification = "应用语言将会在下次打开时变为中文（简体）";
+                        break;
+                    case R.id.language_settings_japanese:
+                        app.saveLanguage(CourseStaticData.japaneseJapan);
+                        notification = "アプリの言語は再起動後に変更します";
                         break;
                 }
                 if(!checkedByDefault){
@@ -63,16 +67,19 @@ public class LanguageSettingsDialog extends AppCompatActivity {
 
     private void setDefaultCheckedBtn(){
         checkedByDefault = true;
-        switch (app.getCurrentLanguage()){
-            case "default":
-                defaultBtn.setChecked(true);
-                break;
+        switch (app.getSavedLanguage()){
             case "zh-cn":
                 chineseSimplifiedbtn.setChecked(true);
                 break;
             case "en-us":
                 englishUSbtn.setChecked(true);
                 break;
+            case "ja-rJP":
+                japanesebtn.setChecked(true);
+                break;
+            default:
+                 defaultBtn.setChecked(true);
+                 break;
         }
         checkedByDefault = false;
     }
@@ -80,6 +87,5 @@ public class LanguageSettingsDialog extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
     }
 }

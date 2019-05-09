@@ -11,12 +11,13 @@ import java.util.List;
 
 public class Course {
     private String courseName;
-    public HashMap<String, HashMap<String, String>> courseList = new HashMap<>();
-    public static List<String> presetElementNameList = new ArrayList<>(Arrays.asList("Code", "Type",
+    HashMap<String, HashMap<String, String>> courseList = new HashMap<>();
+    private List<SingleCourse> singleCourseList = new ArrayList<>();
+    private static List<String> presetElementNameList = new ArrayList<>(Arrays.asList("Code", "Type",
             "Sec", "Units", "Instructor", "Time", "Place", "Max", "Enr", "WL", "Req", "Nor", "Rstr",
             "Textbooks", "Web", "Status"));
     private List<String> elementNameList = presetElementNameList;
-    public List<String> courseCodeList = new ArrayList<>();
+    List<String> courseCodeList = new ArrayList<>();
     private List<String> selectedCourseCodeList = new ArrayList<>();
     private String currentSelectedCourseCode = null;
     private String searchOptionYearTerm;
