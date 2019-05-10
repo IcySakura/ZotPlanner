@@ -2,7 +2,6 @@ package net.donkeyandperi.zotplanner;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -16,9 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.google.android.material.snackbar.Snackbar;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,7 +33,7 @@ public class NotificationSettings extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setTitle(R.string.notification_settings_time_label);
-        setContentView(R.layout.notification_settings_time);
+        setContentView(R.layout.notification_settings);
         app = (MyApp) getApplication();
 
         app.readKeepNotifyMe();
@@ -109,7 +105,22 @@ public class NotificationSettings extends AppCompatActivity {
         }
         StringBuilder currentNotifyMeWhenString = new StringBuilder();
         for(String courseStatus: app.getNotificationWhenStatus()){
-            currentNotifyMeWhenString.append(courseStatus);
+            String stringPendingToAdd = "";
+            switch (courseStatus){
+                case "OPEN":
+                    stringPendingToAdd = getString(R.string.notification_settings_time_status_option_open);
+                    break;
+                case "FULL":
+                    stringPendingToAdd = getString(R.string.notification_settings_time_status_option_full);
+                    break;
+                case "NewOnly":
+                    stringPendingToAdd = getString(R.string.notification_settings_time_status_option_NewOnly);
+                    break;
+                case "Waitl":
+                    stringPendingToAdd = getString(R.string.notification_settings_time_status_option_Waitl);
+                    break;
+            }
+            currentNotifyMeWhenString.append(stringPendingToAdd);
             currentNotifyMeWhenString.append(" | ");
         }
         currentNotifyMeWhenString.deleteCharAt(currentNotifyMeWhenString.lastIndexOf("|"));
@@ -189,6 +200,7 @@ public class NotificationSettings extends AppCompatActivity {
                     finalStatusOptions.add(CourseStaticData.defaultClassStatusWL);
                 }
                 app.setAndSaveNotificationWhenStatus(finalStatusOptions);
+                onResume();
             }
         });
         alertDialogBuilder.setTitle(R.string.notification_settings_time_current_status_options);
@@ -258,6 +270,7 @@ public class NotificationSettings extends AppCompatActivity {
                         app.setAndSaveCheckingInterval(CourseStaticData.checkingTimeInterval120Min);
                         break;
                 }
+                onResume();
             }
         });
         alertDialogBuilder.setTitle(R.string.notification_settings_time_interval_label);

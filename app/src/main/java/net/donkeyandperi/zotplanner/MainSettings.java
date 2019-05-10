@@ -130,6 +130,7 @@ public class MainSettings extends AppCompatActivity {
                     Toast.makeText(context, notification, Toast.LENGTH_LONG).show();
                 }
                 app.setIsLanguageJustChanged(true);
+                onResume();
             }
         });
         alertDialogBuilder.setTitle(R.string.language_settings_dialog_label);
@@ -140,7 +141,20 @@ public class MainSettings extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "onResume is being called.");
-        currentLanguage.setText(String.format(getString(R.string.current_language_settings), app.getSavedLanguage()));
+        String savedLanguage = app.getSavedLanguage();
+        String actualLanguageString = getString(R.string.default_language);
+        switch (savedLanguage){
+            case "zh-cn":
+                actualLanguageString = "中文 (简体)";
+                break;
+            case "en-us":
+                actualLanguageString = "English (United States)";
+                break;
+            case "ja-rJP":
+                actualLanguageString = "日本語";
+                break;
+        }
+        currentLanguage.setText(String.format(getString(R.string.current_language_settings), actualLanguageString));
         currentCheckingInterval.setText(String.format(getString(R.string.current_notification_settings), String.valueOf(app.getCheckingInterval())));
     }
 

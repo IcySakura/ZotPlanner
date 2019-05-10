@@ -247,7 +247,11 @@ public class MyApp extends Application {
     }
 
     public String getSavedLanguage(){
-        return (String)readData("language_settings", "app_language", new TypeToken<String>() {}.getType());
+        String result = (String)readData("language_settings", "app_language", new TypeToken<String>() {}.getType());
+        if(result != null){
+            return result;
+        }
+        return "null";
     }
 
     public void setLanguage(Context context){
@@ -555,6 +559,7 @@ public class MyApp extends Application {
     public void readNotificationWhenStatus(){
         List<String> tempNotificationWhenStatus = (List<String>)readData("notification_status_settings", "notify_me_when", new TypeToken<List<String>>() {}.getType());
         if(tempNotificationWhenStatus != null){
+            notificationWhenStatus.clear();
             notificationWhenStatus = tempNotificationWhenStatus;
         } else {
             notificationWhenStatus.add(CourseStaticData.defaultClassStatusOpen);

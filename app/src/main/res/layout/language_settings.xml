@@ -20,18 +20,21 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/default_language"
+            android:layout_marginBottom="3sp"
             />
         <RadioButton
             android:id="@+id/language_settings_chinese_simplified"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="中文 (简体)"
+            android:layout_marginBottom="3sp"
             />
         <RadioButton
             android:id="@+id/language_settings_english_us"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="English (United States)"
+            android:layout_marginBottom="3sp"
             />
         <RadioButton
             android:id="@+id/language_settings_japanese"
