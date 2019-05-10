@@ -13,11 +13,15 @@ E-mail: lyx981mike@gmail.com
 
 Avaibable in Chinese, English, and Japanese (Coming soon).
 
-Latest Version: Beta v1.1.0
+Latest Version: Beta v1.1.1
+
+05/09/2019	Beta v1.1.1
+-	Minor bugs fixed.
+-	Minor designs in Settings changed.
 
 05/08/2019	Beta v1.1.0
 -	We have fixed the bug in changing languages.
--	“こんにちは！”, Japanese is now added to the App, but it is still in Alpha Phrase.
+-	“こんにちは！”, Japanese is now added to the App, but it is still in Alpha Phase.
 -	We have redesigned some pop-up views in the settings, so they now look better.
 -	We are working on polishing codes to fix more bugs and prepare for the next major redesign!
 -	Limited Time: we have expanded our App to support API level as low as Android 5.0! (However, we do not promise that our App will work smoothly and properly.)
