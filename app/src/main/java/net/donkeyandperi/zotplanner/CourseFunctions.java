@@ -1,12 +1,24 @@
 package net.donkeyandperi.zotplanner;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.gson.Gson;
+
+import net.cachapa.expandablelayout.ExpandableLayout;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -14,6 +26,7 @@ import org.jsoup.select.Elements;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -22,6 +35,8 @@ import java.util.List;
 import java.util.Locale;
 
 public class CourseFunctions {
+
+    private final static String TAG = "CourseFunctions";
 
     public static Document getDocument(String url, List<String> elementList) {
         Document document = null;
@@ -69,10 +84,16 @@ public class CourseFunctions {
                     Log.i("Elementlist ", elementList.toString());
                     org.jsoup.nodes.Document document = getDocument("https://www.reg.uci.edu/perl/WebSoc", elementList);
                     Log.i("Document ", document.toString());
+                    /*
+                    Log.i(TAG, "SendRequest: (Original): " + document.toString().substring(
+                            document.toString().indexOf("Total Classes Displayed"), document.toString().indexOf("Class web site links (listed in ")));
+                    */
+                    //app.writeLogToFile(document.toString(), new Date(System.currentTimeMillis()).toString(), "documentGotFromInternet/");
 
                     String[] tempSearchTerm = elementList.get(0).split("-");
 
                     courseList = parseHtmlForCourseList(document, searchOptionYearTerm, tempSearchTerm);
+                    //Log.i(TAG, "SendRequest: (Parsed length): " + courseList.size());
                     Gson gson = new Gson();
                     data.putBoolean("is_success", true);
                     data.putString("course_list", gson.toJson(courseList));
@@ -112,8 +133,8 @@ public class CourseFunctions {
         Elements elementsForCourseElementTitles = document.select("div[class=course-list] > table > tbody > tr[bgcolor=#E7E7E7]").get(0).select("th");
         List<String> courseElementToBeAdded = new ArrayList<>();
         int courseElementLength = elementsForCourseElementTitles.size();
-        Log.i("Notification ", "courseElementLength: " + courseElementLength);
-        Log.i("Notification ", "should be the last courseElementTitle: " + elementsForCourseElementTitles.get(courseElementLength - 1).text());
+        Log.i(TAG, "courseElementLength: " + courseElementLength);
+        Log.i(TAG, "should be the last courseElementTitle: " + elementsForCourseElementTitles.get(courseElementLength - 1).text());
         for(int i = 0; i < courseElementLength; ++i){
             courseElementToBeAdded.add(elementsForCourseElementTitles.get(i).text());
         }
@@ -126,6 +147,14 @@ public class CourseFunctions {
         for (int i = 0; i < elements.size(); ++i) {
             subElementsTitle = elements.get(i).select("td");
             //Log.i("Notification ", "Size of subElementsTitle is: " + subElementsTitle.size());
+            if(i == 157){
+                Log.d(TAG, "parseHtmlForCourseList: (elements : " + i + "): " + elements.get(i));
+                Log.d(TAG, "parseHtmlForCourseList: The class attribute is: " + elements.get(i).attr("class"));
+            }
+            if(i == 159){
+                Log.d(TAG, "parseHtmlForCourseList: (elements : " + i + "): " + elements.get(i));
+                Log.d(TAG, "parseHtmlForCourseList: The class attribute is: " + elements.get(i).attr("class"));
+            }
             if (elements.get(i).attr("class").equals("college-title")) {
                 newCourse = null;
                 continue;
@@ -143,17 +172,43 @@ public class CourseFunctions {
                     newCourse.setCourseAcademicYearTerm();
                     //Log.i("New course ", newCourse.getCourseName());
                 } else if (newCourse != null) {
+                    /*
+                    if(i == 157){
+                        Log.d(TAG, "parseHtmlForCourseList: (subI: " + subI + "): " + subElementsTitle.get(subI).text());
+                    }
+                    if(i == 159){
+                        Log.d(TAG, "parseHtmlForCourseList: (subI: " + subI + "): " + subElementsTitle.get(subI).text());
+                    }
+                    */
                     //Log.i("Notification ", " indexOfElement (After Check): " + indexOfElement + " with SubI: " + subI + " and check if equal: " + sizeOfElementList);
                     if (isAbleToContinue) {
+                        /*
+                        if(i > 156 && i < 160){
+                            Log.d(TAG, "parseHtmlForCourseList: (elements : " + i + "): " +
+                                    "Checking should create a new course: " + subElementsTitle);
+                            Log.d(TAG, "parseHtmlForCourseList: The answer is: " + subElementsTitle.get(subI).text().isEmpty());
+                            Log.d(TAG, "parseHtmlForCourseList: is the problem solved?: " + subElementsTitle.attr("class").equals("Pct100"));
+                        }
+                        */
+                        if(subElementsTitle.attr("class").equals("Pct100")){
+                            // This if case is for dealing with case where there is an additional message for the course
+                            // such as "same as ..." or "  To enroll in COMPSCI 199, obtain an authorization code from the instructor." and so on...
+                            continue;
+                        }
                         if (subElementsTitle.get(subI).text().isEmpty()) {
                             newCourse = null;
                             continue;
                         }
                         currentCourseNum = subElementsTitle.get(subI).text();
-                        newCourse.setUpNewCourse(currentCourseNum);
+                        /*
+                        if(i > 156 && i < 160){
+                            Log.d(TAG, "parseHtmlForCourseList: (elements : " + i + "): " + "Setting up new singleCourse as :" + currentCourseNum);
+                        }
+                        */
+                        newCourse.setUpNewSingleCourse(currentCourseNum);
                         isAbleToContinue = false;
                     } else if (currentCourseNum != null) {
-                        newCourse.setUpCourseElement(currentCourseNum, courseElementToBeAdded.get(subI), subElementsTitle.get(subI).text());
+                        newCourse.setUpSingleCourseElement(currentCourseNum, courseElementToBeAdded.get(subI), subElementsTitle.get(subI).text());
                         if(subI == courseElementLength - 1){
                             isAbleToContinue = true;
                         }
@@ -483,6 +538,7 @@ public class CourseFunctions {
     }
 
     public static Integer getCourseStatusCorrespondingColor(String status, Context context){
+        Log.d(TAG, "getCourseStatusCorrespondingColor: the status is: " + status);
         if(status == null){
             return R.color.course_status_null_color;
         } else if(status.equals(CourseStaticData.defaultClassStatusWL))
@@ -558,6 +614,149 @@ public class CourseFunctions {
             list.add(elements.get(i).attr("value"));
         }
         return list;
+    }
+
+    public static AlertDialog getCourseDialogForCourse(Context context, MyApp app,
+                                                       AlertDialog.Builder alertDialogBuilder,
+                                                       Course course, Integer whichActivity){
+
+        // whichActivity: 1 means MainActivity, 2 means CourseList
+
+        // Setting up views
+        View courseDialogView = LayoutInflater.from(context).inflate(R.layout.course_dialog, null);
+        RecyclerView recyclerView = courseDialogView.findViewById(R.id.course_dialog_recycler_view);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        CourseDialogAdapter courseDialogAdapter = new CourseDialogAdapter(course, context, app);
+        recyclerView.setAdapter(courseDialogAdapter);
+        alertDialogBuilder.setView(courseDialogView);
+
+        // Setting up alertDialog
+        alertDialogBuilder.setTitle(course.getCourseName());
+        alertDialogBuilder.setPositiveButton(R.string.understand, (dialog, which) -> {
+            if(whichActivity == 1){
+                ((MainActivity)context).onResume();
+            }
+        });
+        alertDialogBuilder.setCancelable(false);
+
+        return alertDialogBuilder.create();
+    }
+
+    public static AlertDialog getDialogForSingleCourse(Context context, MyApp app,
+                                                       AlertDialog.Builder alertDialogBuilder,
+                                                       SingleCourse singleCourse, Integer whichActivity){
+
+        // whichActivity: 1 means MainActivity, 2 means CourseList
+
+        // Setting up views
+        View view = LayoutInflater.from(context).inflate(R.layout.course_dialog_item, null);
+        TextView courseCode;
+        TextView courseType;
+        TextView courseSec;
+        TextView courseUnits;
+        TextView courseInstructor;
+        TextView courseTime;
+        TextView coursePlace;
+        TextView courseMax;
+        TextView courseEnr;
+        TextView courseWl;
+        TextView courseReq;
+        TextView courseNor;
+        TextView courseRstr;
+        TextView courseStatus;
+        RelativeLayout addButton;
+        RelativeLayout courseMain;
+        ExpandableLayout courseSub;
+        LinearLayout courseStatusIcon;
+
+        courseCode = (TextView) view.findViewById(R.id.course_dialog_item_code);
+        courseType = (TextView) view.findViewById(R.id.course_dialog_item_type);
+        courseSec = (TextView) view.findViewById(R.id.course_dialog_item_sec);
+        courseUnits = (TextView) view.findViewById(R.id.course_dialog_item_units);
+        courseInstructor = (TextView) view.findViewById(R.id.course_dialog_item_instructor);
+        courseTime = (TextView) view.findViewById(R.id.course_dialog_item_time);
+        coursePlace = (TextView) view.findViewById(R.id.course_dialog_item_place);
+        courseMax = (TextView) view.findViewById(R.id.course_dialog_item_max);
+        courseEnr = (TextView) view.findViewById(R.id.course_dialog_item_enr);
+        courseWl = (TextView) view.findViewById(R.id.course_dialog_item_wl);
+        courseReq = (TextView) view.findViewById(R.id.course_dialog_item_req);
+        courseNor = (TextView) view.findViewById(R.id.course_dialog_item_nor);
+        courseRstr = (TextView) view.findViewById(R.id.course_dialog_item_rstr);
+        courseStatus = (TextView) view.findViewById(R.id.course_dialog_item_status);
+        addButton = (RelativeLayout) view.findViewById(R.id.course_dialog_item_addButton);
+        courseMain = (RelativeLayout) view.findViewById(R.id.course_dialog_item_main);
+        courseSub = (ExpandableLayout) view.findViewById(R.id.course_dialog_item_subItem);
+        courseStatusIcon = (LinearLayout) view.findViewById(R.id.course_dialog_status_icon);
+
+        List<String> courseElementNameList = singleCourse.getElementNameList();
+
+        courseCode.setText(String.format(context.getString(R.string.course_dialog_code), singleCourse.getCourseElement(courseElementNameList.get(0))));
+        courseType.setText(String.format(context.getString(R.string.course_dialog_type), singleCourse.getCourseElement(courseElementNameList.get(1))));
+        courseSec.setText(String.format(context.getString(R.string.course_dialog_sec), singleCourse.getCourseElement(courseElementNameList.get(2))));
+        courseUnits.setText(String.format(context.getString(R.string.course_dialog_units), singleCourse.getCourseElement(courseElementNameList.get(3))));
+        courseInstructor.setText(String.format(context.getString(R.string.course_dialog_instructor), singleCourse.getCourseElement(courseElementNameList.get(4))));
+        courseTime.setText(String.format(context.getString(R.string.course_dialog_time), singleCourse.getCourseElement(courseElementNameList.get(5))));
+        coursePlace.setText(String.format(context.getString(R.string.course_dialog_place), singleCourse.getCourseElement(courseElementNameList.get(6))));
+        courseMax.setText(String.format(context.getString(R.string.course_dialog_max), singleCourse.getCourseElement(courseElementNameList.get(7))));
+        courseEnr.setText(String.format(context.getString(R.string.course_dialog_enr), singleCourse.getCourseElement(courseElementNameList.get(8))));
+        courseWl.setText(String.format(context.getString(R.string.course_dialog_wl), singleCourse.getCourseElement(courseElementNameList.get(9))));
+        courseReq.setText(String.format(context.getString(R.string.course_dialog_req), singleCourse.getCourseElement(courseElementNameList.get(10))));
+        courseNor.setText(String.format(context.getString(R.string.course_dialog_nor), singleCourse.getCourseElement(courseElementNameList.get(11))));
+        courseRstr.setText(String.format(context.getString(R.string.course_dialog_rstr), singleCourse.getCourseElement(courseElementNameList.get(12))));
+        courseStatus.setText(String.format(context.getString(R.string.course_dialog_status), singleCourse.getCourseElement(courseElementNameList.get(15))));
+        int courseStatusColor = context.getResources().getColor(CourseFunctions.
+                getCourseStatusCorrespondingColor(singleCourse.getCourseElement(courseElementNameList.get(15)), context));
+        courseStatus.setTextColor(courseStatusColor);
+
+        GradientDrawable gradientDrawable = (GradientDrawable) courseStatusIcon.getBackground();
+        gradientDrawable.setColor(courseStatusColor);
+
+        addButton.setVisibility(View.GONE);
+
+        // finish setting up views
+
+        courseSub.setDuration(50);
+        view.post(courseSub::expand);
+        courseMain.setClickable(false);
+        courseSub.setClickable(false);
+
+        alertDialogBuilder.setView(view);
+
+        // Setting up alertDialog
+        alertDialogBuilder.setTitle(singleCourse.getCourseName());
+        alertDialogBuilder.setPositiveButton(R.string.understand, (dialog, which) -> {
+
+        });
+
+        return alertDialogBuilder.create();
+    }
+
+    public static AlertDialog getDialogForNotificationOfCourse(Context context, MyApp app,
+                                                               AlertDialog.Builder alertDialogBuilder,
+                                                               Course course, Integer whichActivity){
+        // whichActivity: 1 means MainActivity, 2 means CourseList
+
+        // Setting up views
+        View courseDialogView = LayoutInflater.from(context).inflate(R.layout.notification_dialog, null);
+        RecyclerView recyclerView = courseDialogView.findViewById(R.id.notification_dialog_recycler_view);
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        app.readNotificationSingleCourseList(); // This is bad, should not be called at all, fix it!
+        NotificationListAdapter notificationListAdapter = new NotificationListAdapter(course, context, app);
+        recyclerView.setAdapter(notificationListAdapter);
+        alertDialogBuilder.setView(courseDialogView);
+
+        // Setting up alertDialog
+        alertDialogBuilder.setTitle(course.getCourseName());
+        alertDialogBuilder.setPositiveButton(R.string.understand, (dialog, which) -> {
+            if(whichActivity == 1){
+                ((MainActivity)context).onResume();
+            }
+        });
+        alertDialogBuilder.setCancelable(false);
+
+        return alertDialogBuilder.create();
     }
 
 }

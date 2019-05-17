@@ -4,6 +4,10 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!--The following lines of permissions are only for debugging-->
+    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />-->
+
     <application
         android:name=".MyApp"
         android:allowBackup="true"
@@ -70,7 +74,7 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-            android:name=".SelectedCourseListWeekView"
+            android:name=".SelectedCourseListCalendarView"
             android:label="@string/calendar_view"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />

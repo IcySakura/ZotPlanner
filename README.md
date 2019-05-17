@@ -11,9 +11,14 @@ Please feel free to compile the application by yourself.
 If you want to contribute to this project, please feel free to send email to me with what you can contribute to this project.
 E-mail: lyx981mike@gmail.com
 
-Avaibable in Chinese, English, and Japanese (Coming soon).
+Avaibable in Chinese, English, and Japanese.
 
-Latest Version: Beta v1.1.1
+Latest Version: Beta v1.2.0 (Beta 1)
+
+05/16/2019	v1.2.0(Beta 1)
+-	Fixed the bug where some courses are not being shown during search.
+-	New design in List View of courses, Multi-Course Dialog, Course Dialog and Notification Dialog.
+-	Some logic changes in Calendar view.
 
 05/09/2019	Beta v1.1.1
 -	Minor bugs fixed.

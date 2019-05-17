@@ -103,4 +103,5 @@
     <string name="have_to_choose_at_least_two_or_more_options">请至少选择两个选项</string>
     <string name="understand">好的!</string>
     <string name="refresh">刷新</string>
+    <string name="edit">编辑</string>
 </resources>

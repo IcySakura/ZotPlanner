@@ -23,5 +23,9 @@
 
     <color name="nav_drawer_title_color">#a4a6a8</color>
 
+    <color name="selected_course_background">#fcfcfc</color>
+    <color name="selected_single_course_background">#e5e5e5</color>
+    <color name="course_background">#ffffff</color>
+    <color name="edit_button_color">#ffffff</color>
 
 </resources>

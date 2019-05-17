@@ -51,6 +51,8 @@ public class CourseList extends AppCompatActivity {
         processorRecyclerView();
     }
 
+
+
     private void processorRecyclerView(){
         List<String> elementList = new ArrayList<>();
         elementList.add(app.getElementFromLastSelectedSearchOption(0));

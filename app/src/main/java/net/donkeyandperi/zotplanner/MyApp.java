@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.os.Build;
+import android.os.Environment;
 import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.DisplayMetrics;
@@ -20,6 +21,10 @@ import com.google.gson.reflect.TypeToken;
 
 import org.jsoup.nodes.Document;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,6 +34,7 @@ import java.util.Locale;
 import java.util.TimerTask;
 
 public class MyApp extends Application {
+    private static final String TAG = "MyApp";
     Document regNormalPage = null;
     List<Course> courseList = null;
     Course currentSelectedCourseForDialog = null;
@@ -161,6 +167,9 @@ public class MyApp extends Application {
         for(Course course: selectedCourseList){
             if(course.getSelectedCourseCodeList().contains(singleCourse.getCourseCode()))
             {
+                Log.d(TAG, "checkIfSingleCourseInSelectedCourseList: start checking for: " + singleCourse.getCourseCode());
+                Log.d(TAG, "checkIfSingleCourseInSelectedCourseList: The list is: " + course.getSelectedCourseCodeList());
+                Log.d(TAG, "checkIfSingleCourseInSelectedCourseList: returning True...");
                 return true;
             }
         }
@@ -322,6 +331,14 @@ public class MyApp extends Application {
         return notificationSingleCourseList;
     }
 
+    public List<String> getNotificationCourseCodeList(){
+        List<String> result = new ArrayList<>();
+        for(SingleCourse singleCourse: notificationSingleCourseList){
+            result.add(singleCourse.getCourseCode());
+        }
+        return result;
+    }
+
     public void removeSingleCourseFromNotificationSingleCourseList(SingleCourse singleCourse){
         for(SingleCourse sc: notificationSingleCourseList){
             if(sc.getCourseCode().equals(singleCourse.getCourseCode())){
@@ -433,6 +450,7 @@ public class MyApp extends Application {
     }
 
     public void addNotificationServiceOnGoingList(String courseCode){
+        // For NotificationService use only
         notificationServiceOnGoingList.add(courseCode);
     }
 
@@ -640,11 +658,19 @@ public class MyApp extends Application {
         return isLanguageJustChanged;
     }
 
-    public Context updateResources(Context context) {
-
-        setLanguage(context);
-
-        return context;
+    public void writeLogToFile(String log, String fileName, String path){
+        try {
+            File dir = new File(getApplicationContext().getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS) + "/debug_log/"
+                    + path);
+            dir.mkdirs();
+            File tempFile = new File(dir, fileName); //this works
+            OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(tempFile));
+            outputStreamWriter.write(log);
+            outputStreamWriter.close();
+        }
+        catch (IOException e) {
+            Log.e(TAG, "writeLogToFile: File write failed: " + e.toString());
+        }
     }
 
 }

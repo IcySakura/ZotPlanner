@@ -17,6 +17,7 @@ public class SingleCourse {
     private List<String> courseQuarterBeginDate = new ArrayList<>();
     private List<String> courseQuarterEndDate = new ArrayList<>();
     private boolean isFollowing = false;
+    private boolean isExpanedInDialog = false;
 
     public void setCourseName(String courseName)
     {
@@ -125,5 +126,65 @@ public class SingleCourse {
 
     public boolean isFollowing() {
         return isFollowing;
+    }
+
+    public String getCourseType(){
+        return getCourseElement(elementNameList.get(1));
+    }
+
+    public String getCourseSection(){
+        return getCourseElement(elementNameList.get(2));
+    }
+
+    public String getCourseCredit(){
+        return getCourseElement(elementNameList.get(3));
+    }
+
+    public String getCourseProfessor(){
+        return getCourseElement(elementNameList.get(4));
+    }
+
+    public String getCourseTime(){
+        return getCourseElement(elementNameList.get(5));
+    }
+
+    public String getCoursePlace(){
+        return getCourseElement(elementNameList.get(6));
+    }
+
+    public String getCourseMaxPeople(){
+        return getCourseElement(elementNameList.get(7));
+    }
+
+    public String getCourseCurrentPeople(){
+        return getCourseElement(elementNameList.get(8));
+    }
+
+    public String getCourseWaitlistPeople(){
+        return getCourseElement(elementNameList.get(9));
+    }
+
+    public String getCourseRequestPeople(){
+        return getCourseElement(elementNameList.get(10));
+    }
+
+    public String getCourseNormalPeople(){
+        return getCourseElement(elementNameList.get(11));
+    }
+
+    public String getCourseRestriction(){
+        return getCourseElement(elementNameList.get(12));
+    }
+
+    public String getCourseStatus(){
+        return getCourseElement(elementNameList.get(15));
+    }
+
+    public boolean isExpanedInDialog() {
+        return isExpanedInDialog;
+    }
+
+    public void setExpanedInDialog(boolean expanedInDialog) {
+        isExpanedInDialog = expanedInDialog;
     }
 }

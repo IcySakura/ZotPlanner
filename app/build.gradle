@@ -12,8 +12,8 @@ android {
         applicationId "net.donkeyandperi.zotplanner"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 14
-        versionName "Beta v1.1.1"
+        versionCode 16
+        versionName "Beta v1.1.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -50,6 +50,7 @@ dependencies {
     implementation 'com.yanzhenjie.recyclerview:x:1.3.2'
     implementation "androidx.core:core-ktx:1.0.2"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'net.cachapa.expandablelayout:expandablelayout:2.9.2'
 }
 repositories {
     mavenCentral()

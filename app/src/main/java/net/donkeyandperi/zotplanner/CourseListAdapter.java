@@ -1,6 +1,7 @@
 package net.donkeyandperi.zotplanner;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import androidx.annotation.NonNull;
 import com.google.android.material.snackbar.Snackbar;
@@ -41,18 +42,19 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Vi
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.course_list_item, parent, false);
         final ViewHolder holder = new ViewHolder(view);
-        holder.courseView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View v) {
-                int position = holder.getAdapterPosition();
-                Course course = mCourseList.get(position);
-                Snackbar.make(v, "You clicked view: " + course.getCourseName(), Snackbar.LENGTH_SHORT).show();
-                Intent intent = new Intent(v.getContext(), CourseDialog.class);
-                app.setCurrentSelectedCourseForDialog(course);
-                v.getContext().startActivity(intent);
-                Activity activity = (Activity) v.getContext();
-                activity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
-            }
+        holder.courseView.setOnClickListener(v -> {
+            int position = holder.getAdapterPosition();
+            Course course = mCourseList.get(position);
+            //Snackbar.make(v, "You clicked view: " + course.getCourseName(), Snackbar.LENGTH_SHORT).show();
+            CourseFunctions.getCourseDialogForCourse(v.getContext(), app, new AlertDialog.Builder(v.getContext()),
+                    course, 2).show();
+            /*
+            Intent intent = new Intent(v.getContext(), CourseDialog.class);
+            app.setCurrentSelectedCourseForDialog(course);
+            v.getContext().startActivity(intent);
+            Activity activity = (Activity) v.getContext();
+            activity.overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            */
         });
         return holder;
     }

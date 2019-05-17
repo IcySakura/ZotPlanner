@@ -41,7 +41,7 @@ public class NotificationListAdapter extends RecyclerView.Adapter<NotificationLi
     @NonNull
     @Override
     public NotificationListAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.notification_list_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.notification_dialog_item, parent, false);
         final NotificationListAdapter.ViewHolder holder = new NotificationListAdapter.ViewHolder(view);
         holder.notificationSwitch.setOnClickListener(new View.OnClickListener() {
             @Override

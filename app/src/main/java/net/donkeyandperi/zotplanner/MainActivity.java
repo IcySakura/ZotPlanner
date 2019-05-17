@@ -7,9 +7,11 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Message;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+
+import androidx.recyclerview.widget.SimpleItemAnimator;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 import androidx.recyclerview.widget.LinearLayoutManager;
 
@@ -97,6 +99,10 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
+        recyclerView.setLayoutManager(linearLayoutManager);
+        recyclerView.setAdapter(selectedCourseListAdapter);
+
         //overridePendingTransition(0, 0);
         //overridePendingTransition(R.anim.slide_in_left, R.anim.slide_in_left);
     }
@@ -122,7 +128,7 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.list_view) {
             pendingIntent = new Intent(MainActivity.this, MainActivity.class);
         } else if (id == R.id.calendar_view) {
-            pendingIntent = new Intent(MainActivity.this, SelectedCourseListWeekView.class);
+            pendingIntent = new Intent(MainActivity.this, SelectedCourseListCalendarView.class);
         } else if (id == R.id.my_eee) {
             Toast.makeText(MainActivity.this, getString(R.string.under_development_message), Toast.LENGTH_SHORT).show();
         } else if (id == R.id.main_settings) {
@@ -161,6 +167,9 @@ public class MainActivity extends AppCompatActivity
         Log.i("Notification ", "onResume");
         welcomeScreen.setVisibility(View.GONE);
         recyclerView.setVisibility(View.VISIBLE);
+
+        ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
+
         fab.show();
         Log.i("onResume ", "fab is going to show.");
         if(app.getLastCheckedItemInNavView() != null){
@@ -194,46 +203,40 @@ public class MainActivity extends AppCompatActivity
                     elementList.add(CourseStaticData.defaultSearchOptionDept);
                     elementList.add(CourseStaticData.defaultSearchOptionDivision);
                     elementList.add(courseCode);
-                    handler = new Handler(new Handler.Callback() {
-                        @Override
-                        public boolean handleMessage(Message msg) {
-                            Bundle bundle = msg.getData();
-                            String gsonValue = bundle.getString("course_list");
-                            if (gsonValue != null && !gsonValue.isEmpty()) {
-                                Gson gson = new Gson();
-                                Type type = new TypeToken<List<Course>>() {
-                                }.getType();
-                                List<Course> temp = gson.fromJson(gsonValue, type);
-                                // Temp
-                                app.updateCourseToSelectedCourseList(temp.get(0));
-                                Log.i("Notification ", "Changing isSelectedCourseListChanged to false.");
-                            } else {
-                                return false;
-                            }
-                            return true;
+                    handler = new Handler(msg -> {
+                        Bundle bundle = msg.getData();
+                        String gsonValue = bundle.getString("course_list");
+                        if (gsonValue != null && !gsonValue.isEmpty()) {
+                            Gson gson = new Gson();
+                            Type type = new TypeToken<List<Course>>() {
+                            }.getType();
+                            List<Course> temp = gson.fromJson(gsonValue, type);
+                            // Temp
+                            app.updateCourseToSelectedCourseList(temp.get(0));
+                            Log.i("Notification ", "Changing isSelectedCourseListChanged to false.");
+                        } else {
+                            return false;
                         }
+                        return true;
                     });
                     final CourseFunctions.SendRequest sendRequest = new CourseFunctions.SendRequest(elementList, handler, course.getSearchOptionYearTerm(), app);
                     threads.add(sendRequest);
                     sendRequest.start();
                 }
             }
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    startLoadingAnimation();
-                    boolean endFlag = false;
-                    while (!endFlag) {
-                        for (CourseFunctions.SendRequest thread : threads) {
-                            endFlag = !thread.getRunningFlag();
-                            if (!endFlag) {
-                                break;
-                            }
+            new Thread(() -> {
+                startLoadingAnimation();
+                boolean endFlag = false;
+                while (!endFlag) {
+                    for (CourseFunctions.SendRequest thread : threads) {
+                        endFlag = !thread.getRunningFlag();
+                        if (!endFlag) {
+                            break;
                         }
-                        //wait(1000);
                     }
-                    endLoadingAnimationQuickSuccess();
+                    //wait(1000);
                 }
+                endLoadingAnimationQuickSuccess();
             }).start();
         } else {
             recyclerView.setVisibility(View.GONE);
@@ -245,31 +248,26 @@ public class MainActivity extends AppCompatActivity
     }
 
     private void startLoadingAnimation() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Log.i("Document ", "Going to prepare");
-                //avLoadingIndicatorView.smoothToShow();
-                swipeRefreshLayout.setRefreshing(true);
-            }
+        runOnUiThread(() -> {
+            Log.i("Document ", "Going to prepare");
+            //avLoadingIndicatorView.smoothToShow();
+            swipeRefreshLayout.setRefreshing(true);
         });
     }
 
     private void endLoadingAnimationQuickSuccess() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                //avLoadingIndicatorView.hide();
-                LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
-                recyclerView.setLayoutManager(linearLayoutManager);
-                recyclerView.setAdapter(selectedCourseListAdapter);
-                app.setIsCurrentlyProcessingSelectedListRecyclerview(false);
-                swipeRefreshLayout.setRefreshing(false);
-                app.setIsSelectedCourseListChanged(false);
-                for(Course course: app.selectedCourseList){
-                    Log.i("CourseCode ", course.getSelectedCourseCodeList().toString());
-                }
+        runOnUiThread(() -> {
+            //avLoadingIndicatorView.hide();
+            app.readNotificationSingleCourseList();
+            selectedCourseListAdapter.notifyDataSetChanged();
+            app.setIsCurrentlyProcessingSelectedListRecyclerview(false);
+            swipeRefreshLayout.setRefreshing(false);
+            app.setIsSelectedCourseListChanged(false);
+            /*
+            for(Course course: app.selectedCourseList){
+                Log.i("CourseCode ", course.getSelectedCourseCodeList().toString());
             }
+            */
         });
     }
 

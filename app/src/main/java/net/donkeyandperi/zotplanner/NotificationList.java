@@ -13,11 +13,11 @@ public class NotificationList extends AppCompatActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.notification_list);
+        setContentView(R.layout.notification_dialog);
         setTitle(R.string.notification_list_label);
         app = (MyApp) getApplication();
         app.readNotificationSingleCourseList();
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.notification_list_recycler_view);
+        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.notification_dialog_recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);
         NotificationListAdapter notificationListAdapter = new NotificationListAdapter(app.getCurrentSelectedCourseForNotificationSwitch(), this, app);

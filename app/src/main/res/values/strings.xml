@@ -103,4 +103,5 @@
     <string name="have_to_choose_at_least_two_or_more_options">Please choose at least two options</string>
     <string name="understand">OK!</string>
     <string name="refresh">Refresh</string>
+    <string name="edit">Edit</string>
 </resources>

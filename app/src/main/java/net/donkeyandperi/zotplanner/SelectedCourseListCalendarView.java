@@ -1,5 +1,6 @@
 package net.donkeyandperi.zotplanner;
 
+import android.app.AlertDialog;
 import android.content.ClipData;
 import android.content.Context;
 import android.content.Intent;
@@ -43,7 +44,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-public class SelectedCourseListWeekView extends AppCompatActivity implements WeekView.EventClickListener, MonthLoader.MonthChangeListener, WeekView.EventLongPressListener, WeekView.EmptyViewLongPressListener, NavigationView.OnNavigationItemSelectedListener {
+public class SelectedCourseListCalendarView extends AppCompatActivity implements WeekView.EventClickListener, MonthLoader.MonthChangeListener, WeekView.EventLongPressListener, WeekView.EmptyViewLongPressListener, NavigationView.OnNavigationItemSelectedListener {
     private static final int TYPE_DAY_VIEW = 1;
     private static final int TYPE_THREE_DAY_VIEW = 2;
     private static final int TYPE_WEEK_VIEW = 3;
@@ -274,10 +275,15 @@ public class SelectedCourseListWeekView extends AppCompatActivity implements Wee
     @Override
     public void onEventClick(WeekViewEvent event, RectF eventRect) {
         //Toast.makeText(this, "Clicked " + event.getName(), Toast.LENGTH_SHORT).show();
-        Intent intent = new Intent(SelectedCourseListWeekView.this, CourseDialog.class);
+        CourseFunctions.getDialogForSingleCourse(context, app, new AlertDialog.Builder(context),
+                app.getCourseByParsedCourseCode(Integer.parseInt(Long.toString(event.getId()))).getSingleCourse(Long.toString(event.getId())),
+                1).show();
+        /*
+        Intent intent = new Intent(SelectedCourseListCalendarView.this, CourseDialog.class);
         app.setCurrentSelectedCourseForDialog(app.getCourseByParsedCourseCode(Integer.parseInt(Long.toString(event.getId()))));
         startActivity(intent);
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+        */
     }
 
     @Override
@@ -286,9 +292,13 @@ public class SelectedCourseListWeekView extends AppCompatActivity implements Wee
         if(app.getCourseByParsedCourseCode(Integer.parseInt(Long.toString(event.getId()))).getCourseElement(app.getCourseByParsedCourseCode(Integer.parseInt(Long.toString(event.getId()))).courseCodeList.get(0), "Status") == null){
             Snackbar.make(mWeekView, getString(R.string.summer_class_not_available_for_notification), Snackbar.LENGTH_SHORT).show();
         } else {
+            CourseFunctions.getDialogForNotificationOfCourse(context, app, new AlertDialog.Builder(context),
+                            app.getCourseByParsedCourseCode(Integer.parseInt(Long.toString(event.getId()))), 1).show();
+            /*
             app.setCurrentSelectedCourseForNotificationSwitch(app.getCourseByParsedCourseCode(Integer.parseInt(Long.toString(event.getId()))));
-            startActivity(new Intent(SelectedCourseListWeekView.this, NotificationList.class));
+            startActivity(new Intent(SelectedCourseListCalendarView.this, NotificationList.class));
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
+            */
         }
     }
 
@@ -402,17 +412,17 @@ public class SelectedCourseListWeekView extends AppCompatActivity implements Wee
         Intent pendingIntent = null;
 
         if (id == R.id.list_view) {
-            pendingIntent = new Intent(SelectedCourseListWeekView.this, MainActivity.class);
+            pendingIntent = new Intent(SelectedCourseListCalendarView.this, MainActivity.class);
         } else if (id == R.id.calendar_view) {
-            pendingIntent = new Intent(SelectedCourseListWeekView.this, SelectedCourseListWeekView.class);
+            pendingIntent = new Intent(SelectedCourseListCalendarView.this, SelectedCourseListCalendarView.class);
         } else if (id == R.id.my_eee) {
-            Toast.makeText(SelectedCourseListWeekView.this, getString(R.string.under_development_message), Toast.LENGTH_SHORT).show();
+            Toast.makeText(SelectedCourseListCalendarView.this, getString(R.string.under_development_message), Toast.LENGTH_SHORT).show();
         } else if (id == R.id.main_settings) {
-            pendingIntent = new Intent(SelectedCourseListWeekView.this, MainSettings.class);
+            pendingIntent = new Intent(SelectedCourseListCalendarView.this, MainSettings.class);
         } else if (id == R.id.donate) {
-            Toast.makeText(SelectedCourseListWeekView.this, getString(R.string.under_development_message), Toast.LENGTH_SHORT).show();
+            Toast.makeText(SelectedCourseListCalendarView.this, getString(R.string.under_development_message), Toast.LENGTH_SHORT).show();
         } else if(id == R.id.main_settings_about){
-            pendingIntent = new Intent(SelectedCourseListWeekView.this, AboutSettingsMain.class);
+            pendingIntent = new Intent(SelectedCourseListCalendarView.this, AboutSettingsMain.class);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.selected_course_list_week_view_drawer_layout);
@@ -600,7 +610,7 @@ public class SelectedCourseListWeekView extends AppCompatActivity implements Wee
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(SelectedCourseListWeekView.this, SearchCourseOption.class);
+                Intent intent = new Intent(SelectedCourseListCalendarView.this, SearchCourseOption.class);
                 startActivity(intent);
             }
         });

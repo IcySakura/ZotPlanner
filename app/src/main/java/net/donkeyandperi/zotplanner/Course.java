@@ -31,6 +31,12 @@ public class Course {
     private HashMap<String, List<Date>> courseStartDates = new HashMap<>();
     private HashMap<String, Integer> courseColors = new HashMap<>();
     private HashMap<Integer, Calendar> firstInstructionDates = new HashMap<>();
+    private boolean isExpandedOnSelectedCourseList = false;
+    private boolean isExpandingOnSelectedCourseList = false;
+    private boolean isReadyWithViewsOnSelectedCourseListForExpand = false;
+
+    public Course(){
+    }
 
     public void setCourseName(String courseName)
     {
@@ -56,14 +62,14 @@ public class Course {
         return elementNameList.get(index);
     }
 
-    public void setUpNewCourse(String courseNum)
+    public void setUpNewSingleCourse(String courseNum)
     {
         courseList.put(courseNum, new HashMap<String, String>());
         courseCodeList.add(courseNum);
-        setUpCourseElement(courseNum, elementNameList.get(0), courseNum);
+        setUpSingleCourseElement(courseNum, elementNameList.get(0), courseNum);
     }
 
-    public void setUpCourseElement(String courseNum, String courseElement, String elementValue)
+    public void setUpSingleCourseElement(String courseNum, String courseElement, String elementValue)
     {
         courseList.get(courseNum).put(courseElement, elementValue);
     }
@@ -75,9 +81,9 @@ public class Course {
 
     public String getCourseElement(String courseNum, String courseElement)
     {
-        Log.i("SizeOfCodeList", String.valueOf(courseCodeList.size()));
-        Log.i("SizeOfList11 ", String.valueOf(courseList.size()));
-        Log.i("SizeOfList22 ", String.valueOf(courseList.get(courseNum).size()));
+//        Log.i("SizeOfCodeList", String.valueOf(courseCodeList.size()));
+//        Log.i("SizeOfList11 ", String.valueOf(courseList.size()));
+//        Log.i("SizeOfList22 ", String.valueOf(courseList.get(courseNum).size()));
         return courseList.get(courseNum).get(courseElement);
     }
 
@@ -103,9 +109,16 @@ public class Course {
     public List<SingleCourse> getSingleCourseList()
     {
         List<SingleCourse> result = new ArrayList<>();
-        SingleCourse singleCourse;
         for(String courseCode: courseCodeList)
         {
+            result.add(getSingleCourse(courseCode));
+        }
+        return result;
+    }
+
+    public List<SingleCourse> getSelectedSingleCourseList(){
+        List<SingleCourse> result = new ArrayList<>();
+        for(String courseCode: selectedCourseCodeList){
             result.add(getSingleCourse(courseCode));
         }
         return result;
@@ -343,4 +356,27 @@ public class Course {
         return courseList.get(courseCode).get(elementTitle).equals("TBA");
     }
 
+    public boolean isExpandedOnSelectedCourseList() {
+        return isExpandedOnSelectedCourseList;
+    }
+
+    public void setExpandedOnSelectedCourseList(boolean expandedOnSelectedCourseList) {
+        isExpandedOnSelectedCourseList = expandedOnSelectedCourseList;
+    }
+
+    public boolean isExpandingOnSelectedCourseList() {
+        return isExpandingOnSelectedCourseList;
+    }
+
+    public void setExpandingOnSelectedCourseList(boolean expandingOnSelectedCourseList) {
+        isExpandingOnSelectedCourseList = expandingOnSelectedCourseList;
+    }
+
+    public boolean isReadyWithViewsOnSelectedCourseListForExpand() {
+        return isReadyWithViewsOnSelectedCourseListForExpand;
+    }
+
+    public void setReadyWithViewsOnSelectedCourseListForExpand(boolean readyWithViewsOnSelectedCourseListForExpand) {
+        isReadyWithViewsOnSelectedCourseListForExpand = readyWithViewsOnSelectedCourseListForExpand;
+    }
 }
