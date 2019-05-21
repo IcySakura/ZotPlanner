@@ -133,8 +133,10 @@ public class SelectedCourseListAdapter extends RecyclerView.Adapter<SelectedCour
                 @Override
                 public void onAnimationEnd(Animation animation) {
                     if(course.isExpandedOnSelectedCourseList()){
+                        Log.d(TAG, "Going to change expandButton Image to state of expanded");
                         holder.expandButton.setImageResource(R.drawable.baseline_expand_less_24);
                     } else {
+                        Log.d(TAG, "Going to change expandButton Image to state of collapsed");
                         holder.expandButton.setImageResource(R.drawable.baseline_expand_more_24);
                     }
                 }
@@ -365,7 +367,7 @@ public class SelectedCourseListAdapter extends RecyclerView.Adapter<SelectedCour
 
         // A stupid method to refresh the selected course list, should be changed later to improve
         // performance of the adapter
-        mCourseList = this.app.getSelectedCourseList();
+//        mCourseList = this.app.getSelectedCourseList();
 
         Course course = mCourseList.get(position);
         holder.courseName.setText(course.getCourseName());
@@ -377,9 +379,13 @@ public class SelectedCourseListAdapter extends RecyclerView.Adapter<SelectedCour
         holder.subItem.addView(getAllSingleCoursesView(holder.courseView.getContext(), course.getSelectedSingleCourseList(), position));
         holder.subItem.post(() -> {
             if(course.isExpandedOnSelectedCourseList()){
+                Log.d(TAG, "onBindViewHolder: going to expand course: " + course.getCourseName());
                 holder.subItem.expand();
+                holder.expandButton.setImageResource(R.drawable.baseline_expand_less_24);
             } else {
+                Log.d(TAG, "onBindViewHolder: going to collapse course: " + course.getCourseName());
                 holder.subItem.collapse();
+                holder.expandButton.setImageResource(R.drawable.baseline_expand_more_24);
             }
         });
         Log.d(TAG, "onBindViewHolder: end");

@@ -13,7 +13,11 @@ E-mail: lyx981mike@gmail.com
 
 Avaibable in Chinese, English, and Japanese.
 
-Latest Version: Beta v1.2.1 (Beta 1)
+Latest Version: Beta v1.2.1 (Beta 2)
+
+05/16/2019	v1.2.1(Beta 2)
+-	Fixed a bug where UI is not refreshed normally in List View.
+-	*IMPORTANT NOTE* Since we added the functionality of showing final of courses last time, we highly recommend you delete all your current selected courses first and add them again. We apologize for any inconvenience caused by us.
 
 05/16/2019  v1.2.1(Beta 1) 
 -	Switch between List view and Calendar view more fluently. 

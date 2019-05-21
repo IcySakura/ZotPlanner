@@ -220,9 +220,9 @@ public class MainActivity extends AppCompatActivity
         // The following three lines are for fixing the bug where the real selectedCourseList
         // got changed but it is not updated in the adapter. The fix is a little bit stupid, so
         // fix it if possible!
-        app.readNotificationSingleCourseList();
-        app.readSelectedCourseListData();
-        app.readCachedInstructionBeginAndEndDates();
+//        app.readNotificationSingleCourseList();
+//        app.readSelectedCourseListData();
+//        app.readCachedInstructionBeginAndEndDates();
 
         Long timeStampForStartOfOnResume = System.currentTimeMillis();
 
@@ -252,14 +252,13 @@ public class MainActivity extends AppCompatActivity
 
         // Setting up different views
         if(app.getCurrentModeInMainActivity() == 0){
-            Log.i("Notification ", "onResume");
+            Log.i(TAG, "onResume(0): going to set visibility to gone and visible.");
             welcomeScreen.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
 
             ((SimpleItemAnimator) recyclerView.getItemAnimator()).setSupportsChangeAnimations(false);
 
             fab.show();
-            Log.i("onResume ", "fab is going to show.");
             if(app.getLastCheckedItemInNavView() != null){
                 navigationView.setCheckedItem(app.getLastCheckedItemInNavView());
             } else {
@@ -357,6 +356,8 @@ public class MainActivity extends AppCompatActivity
                 endLoadingAnimationQuickSuccess();
             }).start();
         } else {
+
+            Log.i(TAG, "processRecyclerView: going to set visibility to gone and visible.");
             recyclerView.setVisibility(View.GONE);
             fab.hide();
             //Log.i("processRecyclerView ", "fab is going to hide.");
@@ -390,6 +391,7 @@ public class MainActivity extends AppCompatActivity
                             "): " + app.getSelectedCourseCodeList());
                 }
                 selectedCourseListAdapter.notifyDataSetChanged();
+                Log.d(TAG, "endLoadingAnimationQuickSuccess: notifyDataSetChanged has been successfully called.");
                 app.setIsCurrentlyProcessingSelectedListRecyclerview(false);
                 swipeRefreshLayout.setRefreshing(false);
                 app.setIsSelectedCourseListChanged(false);

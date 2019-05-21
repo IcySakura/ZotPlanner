@@ -234,7 +234,12 @@ public class MyApp extends Application {
 
     public void clearSelectedCourseListData() {
         isSelectedCourseListChanged = true;
-        selectedCourseList = new ArrayList<>();
+        selectedCourseList.clear();
+        saveSelectedCourseListData();
+    }
+
+    public void addAllCoursesToSelectedCourseList(List<Course> pendingToBeAdded){
+        selectedCourseList.addAll(pendingToBeAdded);
         saveSelectedCourseListData();
     }
 
@@ -243,7 +248,8 @@ public class MyApp extends Application {
         List<Course> tempSelectedCourseList = (List<Course>) readData("course_related_data", "selected_course_list_data", new TypeToken<List<Course>>() {}.getType());
         if(tempSelectedCourseList != null){
             isSelectedCourseListChanged = true;
-            selectedCourseList = tempSelectedCourseList;
+            clearSelectedCourseListData();
+            addAllCoursesToSelectedCourseList(tempSelectedCourseList);
         }
     }
 
