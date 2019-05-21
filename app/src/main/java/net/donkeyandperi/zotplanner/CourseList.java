@@ -54,31 +54,31 @@ public class CourseList extends AppCompatActivity {
 
 
     private void processorRecyclerView(){
-        List<String> elementList = new ArrayList<>();
-        elementList.add(app.getElementFromLastSelectedSearchOption(0));
-        elementList.add(app.getElementFromLastSelectedSearchOption(1));
-        elementList.add(app.getElementFromLastSelectedSearchOption(2));
-        elementList.add(app.getElementFromLastSelectedSearchOption(3));
-        elementList.add("");
-        handler = new Handler(new Handler.Callback() {
-            @Override
-            public boolean handleMessage(Message msg) {
-                Bundle bundle = msg.getData();
-                String gsonValue = bundle.getString("course_list");
-                if(gsonValue != null && !gsonValue.isEmpty())
-                {
-                    Gson gson = new Gson();
-                    Type type = new TypeToken<List<Course>>() {}.getType();
-                    List<Course> temp = gson.fromJson(gsonValue, type);
-                    app.setCourseList(temp);
-                    endLoadingAnimationQuickSuccess();
-                }else {
-                    return false;
-                }
-                return true;
+        List<String> elementList = OperationsWithCourse.getElementListForSearchingCourse(
+                app.getElementFromLastSelectedSearchOption(0),
+                app.getElementFromLastSelectedSearchOption(1),
+                app.getElementFromLastSelectedSearchOption(2),
+                app.getElementFromLastSelectedSearchOption(3),
+                "",
+                CourseStaticData.defaultSearchOptionShowFinals
+        );
+        handler = new Handler(msg -> {
+            Bundle bundle = msg.getData();
+            String gsonValue = bundle.getString("course_list");
+            if(gsonValue != null && !gsonValue.isEmpty())
+            {
+                Gson gson = new Gson();
+                Type type = new TypeToken<List<Course>>() {}.getType();
+                List<Course> temp = gson.fromJson(gsonValue, type);
+                app.setCourseList(temp);
+                endLoadingAnimationQuickSuccess();
+            }else {
+                return false;
             }
+            return true;
         });
-        final CourseFunctions.SendRequest sendRequest = new CourseFunctions.SendRequest(elementList, handler, app.getElementFromLastSelectedSearchOption(0), app);
+        final OperationsWithCourse.SendRequest sendRequest = new OperationsWithCourse.SendRequest(
+                elementList, handler, app.getElementFromLastSelectedSearchOption(0), app);
         new Thread(sendRequest).start();
     }
 

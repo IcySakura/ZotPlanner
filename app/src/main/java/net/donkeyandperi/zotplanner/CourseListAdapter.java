@@ -1,10 +1,8 @@
 package net.donkeyandperi.zotplanner;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Intent;
+
 import androidx.annotation.NonNull;
-import com.google.android.material.snackbar.Snackbar;
 import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -46,10 +44,10 @@ public class CourseListAdapter extends RecyclerView.Adapter<CourseListAdapter.Vi
             int position = holder.getAdapterPosition();
             Course course = mCourseList.get(position);
             //Snackbar.make(v, "You clicked view: " + course.getCourseName(), Snackbar.LENGTH_SHORT).show();
-            CourseFunctions.getCourseDialogForCourse(v.getContext(), app, new AlertDialog.Builder(v.getContext()),
+            OperationsWithUI.getCourseDialogForCourse(v.getContext(), app, new AlertDialog.Builder(v.getContext()),
                     course, 2).show();
             /*
-            Intent intent = new Intent(v.getContext(), CourseDialog.class);
+            Intent intent = new Intent(v.getContext(), Abandoned_CourseDialog.class);
             app.setCurrentSelectedCourseForDialog(course);
             v.getContext().startActivity(intent);
             Activity activity = (Activity) v.getContext();

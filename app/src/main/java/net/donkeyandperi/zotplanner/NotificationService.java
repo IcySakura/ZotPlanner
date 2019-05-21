@@ -95,18 +95,24 @@ public class NotificationService extends Service {
                                 NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
                                 for(String courseStatus: app.getNotificationWhenStatus()){
-                                    if(temp.get(0).getCourseElement(temp.get(0).getCourseCodeList().get(0), temp.get(0).getElementNameFromList(15)).equals(courseStatus)){
+                                    if(temp.get(0).getCourseElement(temp.get(0).getCourseCodeList().
+                                            get(0), temp.get(0).getElementNameFromList(16)).equals(courseStatus)){
                                         Log.i("Notification ", "The notification is sending course: " + singleCourse.getCourseCode());
                                         Intent intent = new Intent(context, MainActivity.class);
                                         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
                                         NotificationCompat.Builder notification = new NotificationCompat.Builder(context, NotificationService.NOTIFICATION_CHANNEL_ID)
-                                                .setContentTitle(String.format(context.getString(R.string.notification_title_for_open_class), CourseFunctions.getCorrespondingCourseStatusString(courseStatus, context)))
-                                                .setContentText(String.format(context.getString(R.string.notification_context_for_open_class), singleCourse.getCourseElement("Type"), singleCourse.getCourseElement("Sec"), singleCourse.getCourseCode(), CourseFunctions.getCorrespondingCourseStatusString(courseStatus, context)))
+                                                .setContentTitle(String.format(context.getString(R.string.notification_title_for_open_class), OperationsWithCourse.getCorrespondingCourseStatusString(courseStatus, context)))
+                                                .setContentText(String.format(context.getString(R.string.notification_context_for_open_class), singleCourse.getCourseType(), singleCourse.getCourseSection(), singleCourse.getCourseCode(), OperationsWithCourse.getCorrespondingCourseStatusString(courseStatus, context)))
                                                 .setSmallIcon(R.drawable.anteater_icon)
                                                 .setLargeIcon(BitmapFactory.decodeResource(context.getResources(), R.drawable.anteater_icon))
                                                 .setContentIntent(pendingIntent)
                                                 .setAutoCancel(true)
-                                                .setStyle(new NotificationCompat.BigTextStyle().bigText(String.format(context.getString(R.string.notification_big_context_for_open_class), singleCourse.getCourseName(), singleCourse.getCourseCode(), singleCourse.getCourseElement("Type"), singleCourse.getCourseElement("Sec"), singleCourse.getCourseElement("Instructor"), singleCourse.getCourseElement("Place"), singleCourse.getCourseElement("Time"))))
+                                                .setStyle(new NotificationCompat.BigTextStyle().bigText(
+                                                        String.format(context.getString(R.string.notification_big_context_for_open_class),
+                                                                singleCourse.getCourseName(), singleCourse.getCourseCode(),
+                                                                singleCourse.getCourseType(), singleCourse.getCourseSection(),
+                                                                singleCourse.getCourseInstructor(), singleCourse.getCoursePlace(),
+                                                                singleCourse.getCourseTime())))
                                                 .setDefaults(NotificationCompat.DEFAULT_ALL);
                                         try {
                                             notificationManager.notify(Integer.parseInt(singleCourse.getCourseCode()), notification.build());
@@ -137,7 +143,7 @@ public class NotificationService extends Service {
                         Log.i("Notification ", "Start checking whether " + singleCourse.getCourseCode() + " is being checked: " + app.checkNotificationServiceOnGoingList(singleCourse.getCourseCode()));
                         if(!app.checkNotificationServiceOnGoingList(singleCourse.getCourseCode())){
                             app.addNotificationServiceOnGoingList(singleCourse.getCourseCode());
-                            CourseFunctions.SendRequest sendRequest = CourseFunctions.SendNotificationIfSingleCourseMatchStatus(singleCourse, app, context, handler);
+                            OperationsWithCourse.SendRequest sendRequest = OperationsWithCourse.SendNotificationIfSingleCourseMatchStatus(singleCourse, app, context, handler);
                             Log.i("Notification ","The timer task is going to end.");
                         }
                     }

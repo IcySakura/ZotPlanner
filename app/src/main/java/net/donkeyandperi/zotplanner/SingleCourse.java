@@ -1,23 +1,24 @@
 package net.donkeyandperi.zotplanner;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 
 public class SingleCourse {
+    private static final String TAG = "SingleCourse";
     private String courseName;
     private HashMap<String, String> elementList = new HashMap<>();
-    private List<String> presetElementNameList = new ArrayList<>(Arrays.asList("Code", "Type",
-            "Sec", "Units", "Instructor", "Time", "Place", "Max", "Enr", "WL", "Req", "Nor", "Rstr",
-            "Textbooks", "Web", "Status"));
-    private List<String> elementNameList = presetElementNameList;
+    private List<String> elementNameList = CourseStaticData.presetElementNameList;
     private String searchOptionYearTerm;
     private boolean isSummer = false;
     private List<String> courseQuarterBeginDate = new ArrayList<>();
     private List<String> courseQuarterEndDate = new ArrayList<>();
     private boolean isFollowing = false;
     private boolean isExpanedInDialog = false;
+    private String comments = "";
 
     public void setCourseName(String courseName)
     {
@@ -46,10 +47,6 @@ public class SingleCourse {
     public String getCourseElement(String courseElement)
     {
         return elementList.get(courseElement);
-    }
-
-    public String getCourseCode(){
-        return elementList.get("Code");
     }
 
     public void setSearchOptionYearTerm(String searchOptionYearTerm) {
@@ -128,6 +125,10 @@ public class SingleCourse {
         return isFollowing;
     }
 
+    public String getCourseCode(){
+        return elementList.get("Code");
+    }
+
     public String getCourseType(){
         return getCourseElement(elementNameList.get(1));
     }
@@ -136,11 +137,11 @@ public class SingleCourse {
         return getCourseElement(elementNameList.get(2));
     }
 
-    public String getCourseCredit(){
+    public String getCourseUnits(){
         return getCourseElement(elementNameList.get(3));
     }
 
-    public String getCourseProfessor(){
+    public String getCourseInstructor(){
         return getCourseElement(elementNameList.get(4));
     }
 
@@ -152,32 +153,36 @@ public class SingleCourse {
         return getCourseElement(elementNameList.get(6));
     }
 
-    public String getCourseMaxPeople(){
+    public String getCourseFinals(){
         return getCourseElement(elementNameList.get(7));
     }
 
-    public String getCourseCurrentPeople(){
+    public String getCourseMaxPeople(){
         return getCourseElement(elementNameList.get(8));
     }
 
-    public String getCourseWaitlistPeople(){
+    public String getCourseEntrance(){
         return getCourseElement(elementNameList.get(9));
     }
 
-    public String getCourseRequestPeople(){
+    public String getCourseWaitlistPeople(){
         return getCourseElement(elementNameList.get(10));
     }
 
-    public String getCourseNormalPeople(){
+    public String getCourseRequestPeople(){
         return getCourseElement(elementNameList.get(11));
     }
 
-    public String getCourseRestriction(){
+    public String getCourseNormalPeople(){
         return getCourseElement(elementNameList.get(12));
     }
 
+    public String getCourseRestriction(){
+        return getCourseElement(elementNameList.get(13));
+    }
+
     public String getCourseStatus(){
-        return getCourseElement(elementNameList.get(15));
+        return getCourseElement(elementNameList.get(16));
     }
 
     public boolean isExpanedInDialog() {
@@ -186,5 +191,13 @@ public class SingleCourse {
 
     public void setExpanedInDialog(boolean expanedInDialog) {
         isExpanedInDialog = expanedInDialog;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
     }
 }

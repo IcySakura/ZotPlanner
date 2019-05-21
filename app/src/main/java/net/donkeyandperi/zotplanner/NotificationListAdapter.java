@@ -87,14 +87,13 @@ public class NotificationListAdapter extends RecyclerView.Adapter<NotificationLi
     @Override
     public void onBindViewHolder(@NonNull NotificationListAdapter.ViewHolder holder, int position) {
         SingleCourse singleCourse = mCourseList.get(position);
-        List<String> courseElementNameList = singleCourse.getElementNameList();
-        String temp = singleCourse.getCourseElement(courseElementNameList.get(0))
+        String temp = singleCourse.getCourseCode()
                 + "  "
-                + singleCourse.getCourseElement(courseElementNameList.get(1))
+                + singleCourse.getCourseType()
                 + "  "
-                + singleCourse.getCourseElement(courseElementNameList.get(5))
+                + singleCourse.getCourseTime()
                 + "  "
-                + singleCourse.getCourseElement(courseElementNameList.get(15));
+                + singleCourse.getCourseStatus();
         holder.notificationSwitch.setText(temp);
         if(app.checkSingleCourseInNotificationSingleCourseList(singleCourse)){
             holder.notificationSwitch.setChecked(true);

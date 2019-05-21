@@ -15,18 +15,27 @@
 
         <TextView
             android:id="@+id/course_dialog_item_code"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"/>
 
         <TextView
             android:id="@+id/course_dialog_item_type"
-            android:layout_width="match_parent"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp"
             android:layout_below="@+id/course_dialog_item_code"/>
+
+        <ImageView
+            android:id="@+id/course_dialog_item_type_expand_image"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/baseline_expand_more_24"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="25dp"/>
 
         <TextView
             android:id="@+id/course_dialog_item_time"
@@ -45,7 +54,7 @@
             android:layout_below="@+id/course_dialog_item_time"/>
 
         <LinearLayout
-            android:id="@+id/course_dialog_status_icon"
+            android:id="@+id/course_dialog_item_status_icon"
             android:layout_width="20dp"
             android:layout_height="20dp"
             android:background="@drawable/circle"
@@ -84,6 +93,13 @@
 
                 <TextView
                     android:id="@+id/course_dialog_item_place"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"/>
+
+                <TextView
+                    android:id="@+id/course_dialog_item_final"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
@@ -135,6 +151,14 @@
                     android:id="@+id/course_dialog_item_status"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginEnd="10dp"/>
+
+                <TextView
+                    android:id="@+id/course_dialog_item_comments_for_singleCourse"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:layout_marginStart="10dp"
                     android:layout_marginEnd="10dp"/>
 

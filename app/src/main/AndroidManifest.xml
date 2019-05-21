@@ -17,7 +17,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".WelcomeScreen_Abandoned"
+            android:name=".Abandoned_WelcomeScreen"
             android:label="@string/app_name"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
@@ -32,12 +32,12 @@
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".CourseDialog"
+            android:name=".Abandoned_CourseDialog"
             android:label="@string/course"
             android:launchMode="singleTask"
             android:theme="@style/NormalDialogStyle" />
         <activity
-            android:name=".LanguageSettingsDialog_Abandoned"
+            android:name=".Abandoned_LanguageSettingsDialog"
             android:label="@string/language_settings_dialog_label"
             android:launchMode="singleTask"
             android:theme="@style/NormalDialogStyle" />
@@ -57,7 +57,7 @@
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".NotificationSettingsTimeInterval_Abandoned"
+            android:name=".Abandoned_NotificationSettingsTimeInterval"
             android:label="@string/notification_settings_time_interval_label"
             android:launchMode="singleTask"
             android:theme="@style/NormalDialogStyle" />
@@ -74,12 +74,12 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
         <activity
-            android:name=".SelectedCourseListCalendarView"
+            android:name=".Abandoned_SelectedCourseListCalendarView"
             android:label="@string/calendar_view"
             android:launchMode="singleTask"
             android:theme="@style/AppTheme.NoActionBar" />
         <activity
-            android:name=".NotificationSettingsTimeStatusOption_Abandoned"
+            android:name=".Abandoned_NotificationSettingsTimeStatusOption"
             android:label="notification_settings_time_current_status_options"
             android:launchMode="singleTask"
             android:theme="@style/NormalDialogStyle" />

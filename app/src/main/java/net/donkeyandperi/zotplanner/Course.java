@@ -1,22 +1,22 @@
 package net.donkeyandperi.zotplanner;
 
+import android.os.Build;
 import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
 public class Course {
+    private static final String TAG = "Course";
     private String courseName;
     HashMap<String, HashMap<String, String>> courseList = new HashMap<>();
-    private List<SingleCourse> singleCourseList = new ArrayList<>();
-    private static List<String> presetElementNameList = new ArrayList<>(Arrays.asList("Code", "Type",
-            "Sec", "Units", "Instructor", "Time", "Place", "Max", "Enr", "WL", "Req", "Nor", "Rstr",
-            "Textbooks", "Web", "Status"));
-    private List<String> elementNameList = presetElementNameList;
+    private List<String> elementNameList =  CourseStaticData.presetElementNameList;
     List<String> courseCodeList = new ArrayList<>();
     private List<String> selectedCourseCodeList = new ArrayList<>();
     private String currentSelectedCourseCode = null;
@@ -34,6 +34,8 @@ public class Course {
     private boolean isExpandedOnSelectedCourseList = false;
     private boolean isExpandingOnSelectedCourseList = false;
     private boolean isReadyWithViewsOnSelectedCourseListForExpand = false;
+    private String comments = "";   // This is the comments for the whole Course
+    private HashMap<String, String> commentsForSingleCourses = new HashMap<>();// This is the comments for every singleCourse
 
     public Course(){
     }
@@ -55,6 +57,10 @@ public class Course {
     public List<String> getElementNameList()
     {
         return elementNameList;
+    }
+
+    public void setCourseElementNameList(List<String> courseElementNameList){
+        this.elementNameList = courseElementNameList;
     }
 
     public String getElementNameFromList(int index)
@@ -118,6 +124,8 @@ public class Course {
 
     public List<SingleCourse> getSelectedSingleCourseList(){
         List<SingleCourse> result = new ArrayList<>();
+        // Sort it first to make the singleCourses being shown in the correct order
+        Collections.sort(selectedCourseCodeList);
         for(String courseCode: selectedCourseCodeList){
             result.add(getSingleCourse(courseCode));
         }
@@ -150,10 +158,19 @@ public class Course {
         singleCourse.setIsSummer(isSummer);
         singleCourse.setCourseQuarterBeginDate(courseQuarterBeginDate);
         singleCourse.setCourseQuarterEndDate(courseQuarterEndDate);
+        /*
+        Log.d(TAG, "getSingleCourse: setting up singleCourse (" + courseCode + ")" +
+                "with elementNameList: " + elementNameList);
+                */
         for(String elementName: elementNameList)
         {
+            /*
+            Log.d(TAG, "getSingleCourse: setting up " +
+                    elementName + " with " + getCourseElement(courseCode, elementName));
+                    */
             singleCourse.setUpCourseElement(elementName, getCourseElement(courseCode, elementName));
         }
+        singleCourse.setComments(getCommentsForSingleCourse(courseCode));
         return singleCourse;
     }
 
@@ -378,5 +395,40 @@ public class Course {
 
     public void setReadyWithViewsOnSelectedCourseListForExpand(boolean readyWithViewsOnSelectedCourseListForExpand) {
         isReadyWithViewsOnSelectedCourseListForExpand = readyWithViewsOnSelectedCourseListForExpand;
+    }
+
+    public String getComments() {
+        return comments;
+    }
+
+    public void setComments(String comments) {
+        this.comments = comments;
+    }
+
+    public String getCommentsForSingleCourse(String courseCode) {
+        if(Build.VERSION.SDK_INT >= 24){
+            return commentsForSingleCourses.getOrDefault(courseCode, "");
+        }
+        if(commentsForSingleCourses.containsKey(courseCode)){
+            return commentsForSingleCourses.get(courseCode);
+        }
+        return "";
+    }
+
+    public void setCommentsForSingleCourse(String courseCode, String comments) {
+        commentsForSingleCourses.put(courseCode, comments);
+    }
+
+    public int getNumberOfSingleCourses(){
+        return courseCodeList.size();
+    }
+
+    public boolean isSameCourse(Course course){
+        for(String courseCode: course.courseCodeList){
+            if(courseCodeList.contains(courseCode)){
+                return true;
+            }
+        }
+        return false;
     }
 }

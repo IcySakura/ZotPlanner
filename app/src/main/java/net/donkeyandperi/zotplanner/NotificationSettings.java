@@ -62,7 +62,7 @@ public class NotificationSettings extends AppCompatActivity {
                 AlertDialog alertDialog = setUpCheckingIntervalAlertDialog(alertDialogBuilder);
                 alertDialog.show();
                 /*
-                Intent intent = new Intent(NotificationSettings.this, NotificationSettingsTimeInterval_Abandoned.class);
+                Intent intent = new Intent(NotificationSettings.this, Abandoned_NotificationSettingsTimeInterval.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 */
@@ -76,7 +76,7 @@ public class NotificationSettings extends AppCompatActivity {
                 AlertDialog alertDialog = setUpNotifyMeWhenAlertDialog(alertDialogBuilder);
                 alertDialog.show();
                 /*
-                Intent intent = new Intent(NotificationSettings.this, NotificationSettingsTimeStatusOption_Abandoned.class);
+                Intent intent = new Intent(NotificationSettings.this, Abandoned_NotificationSettingsTimeStatusOption.class);
                 startActivity(intent);
                 overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
                 */

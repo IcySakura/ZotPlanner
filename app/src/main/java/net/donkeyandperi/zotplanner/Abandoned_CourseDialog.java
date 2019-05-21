@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class CourseDialog extends AppCompatActivity {
+public class Abandoned_CourseDialog extends AppCompatActivity {
 
     private MyApp app;
 

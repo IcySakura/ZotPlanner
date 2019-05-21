@@ -9,7 +9,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-public class LanguageSettingsDialog_Abandoned extends AppCompatActivity {
+public class Abandoned_LanguageSettingsDialog extends AppCompatActivity {
 
     private MyApp app;
     private Context context = this;

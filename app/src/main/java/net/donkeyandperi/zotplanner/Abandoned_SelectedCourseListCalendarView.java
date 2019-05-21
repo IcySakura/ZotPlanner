@@ -44,7 +44,10 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-public class SelectedCourseListCalendarView extends AppCompatActivity implements WeekView.EventClickListener, MonthLoader.MonthChangeListener, WeekView.EventLongPressListener, WeekView.EmptyViewLongPressListener, NavigationView.OnNavigationItemSelectedListener {
+public class Abandoned_SelectedCourseListCalendarView extends AppCompatActivity implements
+        WeekView.EventClickListener, MonthLoader.MonthChangeListener,
+        WeekView.EventLongPressListener, WeekView.EmptyViewLongPressListener,
+        NavigationView.OnNavigationItemSelectedListener {
     private static final int TYPE_DAY_VIEW = 1;
     private static final int TYPE_THREE_DAY_VIEW = 2;
     private static final int TYPE_WEEK_VIEW = 3;
@@ -61,18 +64,16 @@ public class SelectedCourseListCalendarView extends AppCompatActivity implements
     Context context = this;
     ClipData.Item item;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.selected_course_list_calendar_view);
+        setContentView(R.layout.abandoned_selected_course_list_calendar_view);
         app = (MyApp) getApplication();
         app.setLanguage(context);
         setTitle(R.string.app_name);
 
         // Refreshing the list for the activity of SearchCourseOption.
-        CourseFunctions.refreshLists(app);
+        OperationsWithCourse.refreshLists(app);
 
         // Get a reference for the week view in the layout.
         mWeekView = (WeekView) findViewById(R.id.selected_course_list_week_view);
@@ -144,7 +145,7 @@ public class SelectedCourseListCalendarView extends AppCompatActivity implements
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         if(isFirstTimeRunning){
-            getMenuInflater().inflate(R.menu.week_view, menu);
+            getMenuInflater().inflate(R.menu.calendar_view_menu, menu);
             subMenuOfGoTo = menu.findItem(R.id.week_view_action_go_to_one_event).getSubMenu();
             isFirstTimeRunning = false;
         }
@@ -275,11 +276,11 @@ public class SelectedCourseListCalendarView extends AppCompatActivity implements
     @Override
     public void onEventClick(WeekViewEvent event, RectF eventRect) {
         //Toast.makeText(this, "Clicked " + event.getName(), Toast.LENGTH_SHORT).show();
-        CourseFunctions.getDialogForSingleCourse(context, app, new AlertDialog.Builder(context),
+        OperationsWithUI.getDialogForSingleCourse(context, app, new AlertDialog.Builder(context),
                 app.getCourseByParsedCourseCode(Integer.parseInt(Long.toString(event.getId()))).getSingleCourse(Long.toString(event.getId())),
                 1).show();
         /*
-        Intent intent = new Intent(SelectedCourseListCalendarView.this, CourseDialog.class);
+        Intent intent = new Intent(Abandoned_SelectedCourseListCalendarView.this, Abandoned_CourseDialog.class);
         app.setCurrentSelectedCourseForDialog(app.getCourseByParsedCourseCode(Integer.parseInt(Long.toString(event.getId()))));
         startActivity(intent);
         overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
@@ -289,14 +290,16 @@ public class SelectedCourseListCalendarView extends AppCompatActivity implements
     @Override
     public void onEventLongPress(WeekViewEvent event, RectF eventRect) {
         //Toast.makeText(this, "Long pressed event: " + event.getName(), Toast.LENGTH_SHORT).show();
-        if(app.getCourseByParsedCourseCode(Integer.parseInt(Long.toString(event.getId()))).getCourseElement(app.getCourseByParsedCourseCode(Integer.parseInt(Long.toString(event.getId()))).courseCodeList.get(0), "Status") == null){
+        if(app.getCourseByParsedCourseCode(Integer.parseInt(Long.toString(event.getId()))).
+                getCourseElement(app.getCourseByParsedCourseCode(Integer.parseInt(Long.toString(event.getId()))).
+                        courseCodeList.get(0), "Status") == null){
             Snackbar.make(mWeekView, getString(R.string.summer_class_not_available_for_notification), Snackbar.LENGTH_SHORT).show();
         } else {
-            CourseFunctions.getDialogForNotificationOfCourse(context, app, new AlertDialog.Builder(context),
+            OperationsWithUI.getDialogForNotificationOfCourse(context, app, new AlertDialog.Builder(context),
                             app.getCourseByParsedCourseCode(Integer.parseInt(Long.toString(event.getId()))), 1).show();
             /*
             app.setCurrentSelectedCourseForNotificationSwitch(app.getCourseByParsedCourseCode(Integer.parseInt(Long.toString(event.getId()))));
-            startActivity(new Intent(SelectedCourseListCalendarView.this, NotificationList.class));
+            startActivity(new Intent(Abandoned_SelectedCourseListCalendarView.this, NotificationList.class));
             overridePendingTransition(R.anim.fade_in, R.anim.fade_out);
             */
         }
@@ -349,8 +352,8 @@ public class SelectedCourseListCalendarView extends AppCompatActivity implements
                         iCourse.setCourseColor(selectedCourseCode, courseColor);
                     }
                     courseTime = iCourse.getCourseElement(selectedCourseCode, "Time");
-                    weekInformation = CourseFunctions.getCourseTimeNumAndWeekNum(courseTime);
-                    dates = CourseFunctions.getAllDatesBetweenRange(iCourse.getInstructionBeginDate(), iCourse.getInstructionEndDate(), weekInformation.get(0).toString(), iCourse, selectedCourseCode);
+                    weekInformation = OperationsWithTime.getCourseTimeNumAndWeekNum(courseTime);
+                    dates = OperationsWithTime.getAllDatesBetweenRange(iCourse.getInstructionBeginDate(), iCourse.getInstructionEndDate(), weekInformation.get(0).toString(), iCourse, selectedCourseCode);
                     numOfDates = dates.size();
                     for (int i = 0; i < numOfDates; ++i) {
                         startTime = Calendar.getInstance();
@@ -412,17 +415,17 @@ public class SelectedCourseListCalendarView extends AppCompatActivity implements
         Intent pendingIntent = null;
 
         if (id == R.id.list_view) {
-            pendingIntent = new Intent(SelectedCourseListCalendarView.this, MainActivity.class);
+            pendingIntent = new Intent(Abandoned_SelectedCourseListCalendarView.this, MainActivity.class);
         } else if (id == R.id.calendar_view) {
-            pendingIntent = new Intent(SelectedCourseListCalendarView.this, SelectedCourseListCalendarView.class);
+            pendingIntent = new Intent(Abandoned_SelectedCourseListCalendarView.this, Abandoned_SelectedCourseListCalendarView.class);
         } else if (id == R.id.my_eee) {
-            Toast.makeText(SelectedCourseListCalendarView.this, getString(R.string.under_development_message), Toast.LENGTH_SHORT).show();
+            Toast.makeText(Abandoned_SelectedCourseListCalendarView.this, getString(R.string.under_development_message), Toast.LENGTH_SHORT).show();
         } else if (id == R.id.main_settings) {
-            pendingIntent = new Intent(SelectedCourseListCalendarView.this, MainSettings.class);
+            pendingIntent = new Intent(Abandoned_SelectedCourseListCalendarView.this, MainSettings.class);
         } else if (id == R.id.donate) {
-            Toast.makeText(SelectedCourseListCalendarView.this, getString(R.string.under_development_message), Toast.LENGTH_SHORT).show();
+            Toast.makeText(Abandoned_SelectedCourseListCalendarView.this, getString(R.string.under_development_message), Toast.LENGTH_SHORT).show();
         } else if(id == R.id.main_settings_about){
-            pendingIntent = new Intent(SelectedCourseListCalendarView.this, AboutSettingsMain.class);
+            pendingIntent = new Intent(Abandoned_SelectedCourseListCalendarView.this, AboutSettingsMain.class);
         }
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.selected_course_list_week_view_drawer_layout);
@@ -463,16 +466,18 @@ public class SelectedCourseListCalendarView extends AppCompatActivity implements
         List<Course> selectedCourseList = app.getSelectedCourseList();
         Log.i("SelectedCourseListSize ", String.valueOf(selectedCourseList.size()));
         if (!selectedCourseList.isEmpty() && app.isSelectedCourseListChanged() && !app.isInProgressOfRefreshingSelectedCourseList()) {
-            final List<CourseFunctions.SendRequest> threads = new ArrayList<>();
+            final List<OperationsWithCourse.SendRequest> threads = new ArrayList<>();
             for (final Course course : selectedCourseList) {
                 final List<String> selectedCourseCodeList = course.getSelectedCourseCodeList();
                 for (final String courseCode : selectedCourseCodeList) {
-                    List<String> elementList = new ArrayList<>();
-                    elementList.add(course.getSearchOptionYearTerm());
-                    elementList.add(CourseStaticData.defaultSearchOptionBreadth);
-                    elementList.add(CourseStaticData.defaultSearchOptionDept);
-                    elementList.add(CourseStaticData.defaultSearchOptionDivision);
-                    elementList.add(courseCode);
+                    List<String> elementList = OperationsWithCourse.getElementListForSearchingCourse(
+                            course.getSearchOptionYearTerm(),
+                            CourseStaticData.defaultSearchOptionBreadth,
+                            CourseStaticData.defaultSearchOptionDept,
+                            CourseStaticData.defaultSearchOptionDivision,
+                            courseCode,
+                            CourseStaticData.defaultSearchOptionShowFinals
+                    );
                     Log.i("refreshSelected ", "A new handler1 will be made for " + courseCode);
                     handler = new Handler(new Handler.Callback() {
                         @Override
@@ -495,7 +500,8 @@ public class SelectedCourseListCalendarView extends AppCompatActivity implements
                             return true;
                         }
                     });
-                    final CourseFunctions.SendRequest sendRequest = new CourseFunctions.SendRequest(elementList, handler, course.getSearchOptionYearTerm(), app);
+                    final OperationsWithCourse.SendRequest sendRequest = new OperationsWithCourse.SendRequest(
+                            elementList, handler, course.getSearchOptionYearTerm(), app);
                     threads.add(sendRequest);
                     sendRequest.start();
                 }
@@ -507,7 +513,7 @@ public class SelectedCourseListCalendarView extends AppCompatActivity implements
                     startLoadingAnimation();
                     boolean endFlag = false;
                     while (!endFlag) {
-                        for (CourseFunctions.SendRequest thread : threads) {
+                        for (OperationsWithCourse.SendRequest thread : threads) {
                             endFlag = !thread.getRunningFlag();
                             if (!endFlag) {
                                 break;
@@ -539,7 +545,7 @@ public class SelectedCourseListCalendarView extends AppCompatActivity implements
                 }
             }).run();
         } else{
-            final List<CourseFunctions.SendRequestForCalendar> threadsForCalendar = new ArrayList<>();
+            final List<OperationsWithCourse.SendRequestForCalendar> threadsForCalendar = new ArrayList<>();
             for(final Course iCourse: app.getSelectedCourseList()){
                 if(iCourse.isDateSet()){
                     continue;
@@ -573,7 +579,7 @@ public class SelectedCourseListCalendarView extends AppCompatActivity implements
                             return true;
                         }
                     });
-                    final CourseFunctions.SendRequestForCalendar sendRequestForCalendar = new CourseFunctions.SendRequestForCalendar(handler, app, iCourse.getCourseAcademicYearTerm(), iCourse.isSummer(), iCourse.getCourseBeginYear(), iCourse);
+                    final OperationsWithCourse.SendRequestForCalendar sendRequestForCalendar = new OperationsWithCourse.SendRequestForCalendar(handler, app, iCourse.getCourseAcademicYearTerm(), iCourse.isSummer(), iCourse.getCourseBeginYear(), iCourse);
                     threadsForCalendar.add(sendRequestForCalendar);
                     sendRequestForCalendar.start();
                 }
@@ -587,7 +593,7 @@ public class SelectedCourseListCalendarView extends AppCompatActivity implements
                         if(threadsForCalendar.isEmpty()){
                             break;
                         }
-                        for (CourseFunctions.SendRequestForCalendar thread : threadsForCalendar) {
+                        for (OperationsWithCourse.SendRequestForCalendar thread : threadsForCalendar) {
                             endFlag = !thread.getRunningFlag();
                             if (!endFlag) {
                                 break;
@@ -610,7 +616,7 @@ public class SelectedCourseListCalendarView extends AppCompatActivity implements
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Intent intent = new Intent(SelectedCourseListCalendarView.this, SearchCourseOption.class);
+                Intent intent = new Intent(Abandoned_SelectedCourseListCalendarView.this, SearchCourseOption.class);
                 startActivity(intent);
             }
         });

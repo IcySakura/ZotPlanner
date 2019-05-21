@@ -14,7 +14,7 @@
     <string name="course_dialog_final">期末試験: %1$s</string>
     <string name="course_dialog_instructor">講師: %1$s</string>
     <string name="course_dialog_max">最大人数: %1$s</string>
-    <string name="course_dialog_nor">正常人数: %1$s</string>
+    <string name="course_dialog_nor">転校生ための予約: %1$s</string>
     <string name="course_dialog_place">場所: %1$s</string>
     <string name="course_dialog_req">要求人数: %1$s</string>
     <string name="course_dialog_rstr">制限: %1$s</string>
@@ -105,4 +105,6 @@
     <string name="welcome_button_text">開始</string>
     <string name="welcome_words">こんにちは！</string>
     <string name="edit">編集</string>
+    <string name="comments">注意点: %1$s</string>
+    <string name="error_refreshing_singleCourse">エラーが発生しました！</string>
 </resources>

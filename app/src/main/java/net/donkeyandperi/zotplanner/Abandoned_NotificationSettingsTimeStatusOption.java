@@ -10,7 +10,7 @@ import android.widget.CheckBox;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NotificationSettingsTimeStatusOption_Abandoned extends AppCompatActivity {
+public class Abandoned_NotificationSettingsTimeStatusOption extends AppCompatActivity {
 
     private MyApp app;
     private Context context = this;

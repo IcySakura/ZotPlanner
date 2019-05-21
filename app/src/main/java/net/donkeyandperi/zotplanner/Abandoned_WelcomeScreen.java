@@ -15,7 +15,7 @@ import org.jsoup.select.Elements;
 import java.util.ArrayList;
 import java.util.List;
 
-public class WelcomeScreen_Abandoned extends AppCompatActivity {
+public class Abandoned_WelcomeScreen extends AppCompatActivity {
     private boolean success = false;
     private Intent intent;
     private MyApp app;
@@ -25,7 +25,7 @@ public class WelcomeScreen_Abandoned extends AppCompatActivity {
         setContentView(R.layout.welcome_screen);
         app = (MyApp) getApplication();
         final LoadingButton lb = (LoadingButton)findViewById(R.id.loading_btn);
-        intent = new Intent(WelcomeScreen_Abandoned.this, SearchCourseOption.class);
+        intent = new Intent(Abandoned_WelcomeScreen.this, SearchCourseOption.class);
         lb.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

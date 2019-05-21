@@ -56,7 +56,7 @@ public class MainSettings extends AppCompatActivity {
                 AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
                 AlertDialog alertDialog = setAlertDialogForLangaugeSettings(alertDialogBuilder);
                 /*
-                Intent intent = new Intent(MainSettings.this, LanguageSettingsDialog_Abandoned.class);
+                Intent intent = new Intent(MainSettings.this, Abandoned_LanguageSettingsDialog.class);
                 startActivity(intent);
                 */
                 alertDialog.show();

@@ -56,9 +56,11 @@ public class MyApp extends Application {
     private List<String> notificationWhenStatus = new ArrayList<>();
     private boolean keepNotifyMeSwitch = false;
     private boolean isCurrentlyProcessingSelectedListRecyclerview = false;
+    private boolean isCurrentlyProcessingSelectedListCalendarview = false;
     private Integer lastCheckedItemInNavView = null;
     private Boolean isCourseListRefreshedBySplashActivity = false;
     private Boolean isLanguageJustChanged = false;
+    private int currentModeInMainActivity = 0;  // 0 means in List View; 1 means in Calendar View
 
     public void setRegNormalPage(Document regNormalPage){
         this.regNormalPage = regNormalPage;
@@ -147,11 +149,18 @@ public class MyApp extends Application {
         isSelectedCourseListChanged = true;
         Log.i("Notification ", "Changing isSelectedCourseListChanged to true.(updateCourseToSelectedCourseList)");
         for (Course course_old: selectedCourseList){
-            if(course_old.getCourseName().equals(course.getCourseName())){
+            // Below we no longer compare two courses' names because UCI might change the course name
+            // at some time
+            if(course_old.isSameCourse(course)){
                 Log.i("CourseName ", course.getCourseName());
                 Log.i("SizeOfList ", String.valueOf(course.courseList.size()));
                 Log.i("SizeOfCourse ", String.valueOf(course.courseCodeList.size()));
+                Log.d(TAG, "updateCourseToSelectedCourseList: going to replace " + course.getCourseCodeList().get(0) + " with: " +
+                        course.getCourseCodeHashMap(course.getCourseCodeList().get(0)));
                 course_old.replaceCourseElementHashMap(course.getCourseCodeList().get(0), course.getCourseCodeHashMap(course.getCourseCodeList().get(0)));
+                // The one line below is for adding "Final" to elementNameList, mainly for transition of the app
+                // which should be deleted later 05/18/2019
+                course_old.setCourseElementNameList(CourseStaticData.presetElementNameList);
                 break;
             }
         }
@@ -673,4 +682,19 @@ public class MyApp extends Application {
         }
     }
 
+    public int getCurrentModeInMainActivity() {
+        return currentModeInMainActivity;
+    }
+
+    public void setCurrentModeInMainActivity(int currentModeInMainActivity) {
+        this.currentModeInMainActivity = currentModeInMainActivity;
+    }
+
+    public boolean isCurrentlyProcessingSelectedListCalendarview() {
+        return isCurrentlyProcessingSelectedListCalendarview;
+    }
+
+    public void setCurrentlyProcessingSelectedListCalendarview(boolean currentlyProcessingSelectedListCalendarview) {
+        isCurrentlyProcessingSelectedListCalendarview = currentlyProcessingSelectedListCalendarview;
+    }
 }

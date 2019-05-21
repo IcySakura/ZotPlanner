@@ -37,37 +37,37 @@ public class SplashActivity extends AppCompatActivity {
         if (!selectedCourseList.isEmpty()) {
             startLoadingAnimation();
             app.setIsCurrentlyProcessingSelectedListRecyclerview(true);
-            final List<CourseFunctions.SendRequest> threads = new ArrayList<>();
+            final List<OperationsWithCourse.SendRequest> threads = new ArrayList<>();
             for (final Course course : selectedCourseList) {
                 final List<String> selectedCourseCodeList = course.getSelectedCourseCodeList();
                 for (final String courseCode : selectedCourseCodeList) {
-                    List<String> elementList = new ArrayList<>();
-                    elementList.add(course.getSearchOptionYearTerm());
-                    elementList.add(CourseStaticData.defaultSearchOptionBreadth);
-                    elementList.add(CourseStaticData.defaultSearchOptionDept);
-                    elementList.add(CourseStaticData.defaultSearchOptionDivision);
-                    elementList.add(courseCode);
-                    handler = new Handler(new Handler.Callback() {
-                        @Override
-                        public boolean handleMessage(Message msg) {
-                            Bundle bundle = msg.getData();
-                            String gsonValue = bundle.getString("course_list");
-                            if (gsonValue != null && !gsonValue.isEmpty()) {
-                                Gson gson = new Gson();
-                                Type type = new TypeToken<List<Course>>() {
-                                }.getType();
-                                List<Course> temp = gson.fromJson(gsonValue, type);
-                                // Temp
-                                app.updateCourseToSelectedCourseList(temp.get(0));
-                                app.setIsSelectedCourseListChanged(false);
-                                Log.i("Notification ", "Changing isSelectedCourseListChanged to false.");
-                            } else {
-                                return false;
-                            }
-                            return true;
+                    List<String> elementList = OperationsWithCourse.getElementListForSearchingCourse(
+                            course.getSearchOptionYearTerm(),
+                            CourseStaticData.defaultSearchOptionBreadth,
+                            CourseStaticData.defaultSearchOptionDept,
+                            CourseStaticData.defaultSearchOptionDivision,
+                            courseCode,
+                            CourseStaticData.defaultSearchOptionShowFinals
+                    );
+                    handler = new Handler(msg -> {
+                        Bundle bundle = msg.getData();
+                        String gsonValue = bundle.getString("course_list");
+                        if (gsonValue != null && !gsonValue.isEmpty()) {
+                            Gson gson = new Gson();
+                            Type type = new TypeToken<List<Course>>() {
+                            }.getType();
+                            List<Course> temp = gson.fromJson(gsonValue, type);
+                            // Temp
+                            app.updateCourseToSelectedCourseList(temp.get(0));
+                            app.setIsSelectedCourseListChanged(false);
+                            Log.i("Notification ", "Changing isSelectedCourseListChanged to false.");
+                        } else {
+                            return false;
                         }
+                        return true;
                     });
-                    final CourseFunctions.SendRequest sendRequest = new CourseFunctions.SendRequest(elementList, handler, course.getSearchOptionYearTerm(), app);
+                    final OperationsWithCourse.SendRequest sendRequest = new OperationsWithCourse.SendRequest(
+                            elementList, handler, course.getSearchOptionYearTerm(), app);
                     threads.add(sendRequest);
                     sendRequest.start();
                 }
@@ -77,7 +77,7 @@ public class SplashActivity extends AppCompatActivity {
                 public void run() {
                     boolean endFlag = false;
                     while (!endFlag) {
-                        for (CourseFunctions.SendRequest thread : threads) {
+                        for (OperationsWithCourse.SendRequest thread : threads) {
                             endFlag = !thread.getRunningFlag();
                             if (!endFlag) {
                                 break;

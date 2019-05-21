@@ -41,7 +41,7 @@
     <string name="course_dialog_enr">已选人数: %1$s</string>
     <string name="course_dialog_wl">等待人数: %1$s</string>
     <string name="course_dialog_req">请求人数: %1$s</string>
-    <string name="course_dialog_nor">正常人数: %1$s</string>
+    <string name="course_dialog_nor">转学生预留: %1$s</string>
     <string name="course_dialog_rstr">限制: %1$s</string>
     <string name="course_dialog_status">状态: %1$s</string>
     <string name="selected_course_list_nothing_text">未添加任何课程</string>
@@ -104,4 +104,6 @@
     <string name="understand">好的!</string>
     <string name="refresh">刷新</string>
     <string name="edit">编辑</string>
+    <string name="comments">注意事项: %1$s</string>
+    <string name="error_refreshing_singleCourse">发生了错误！</string>
 </resources>

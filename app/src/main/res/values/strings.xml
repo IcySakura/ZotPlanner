@@ -104,4 +104,6 @@
     <string name="understand">OK!</string>
     <string name="refresh">Refresh</string>
     <string name="edit">Edit</string>
+    <string name="comments">Comments: %1$s</string>
+    <string name="error_refreshing_singleCourse">An error happened!</string>
 </resources>

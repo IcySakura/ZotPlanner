@@ -3,6 +3,7 @@ package net.donkeyandperi.zotplanner;
 import android.app.AlertDialog;
 import android.content.Context;
 
+import androidx.annotation.LongDef;
 import androidx.annotation.NonNull;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.recyclerview.widget.RecyclerView;
@@ -69,6 +70,22 @@ public class SelectedCourseListAdapter extends RecyclerView.Adapter<SelectedCour
         holder.subItem.setOnExpansionUpdateListener((expansionFraction, state) -> {
             //Log.d(TAG, "onCreateViewHolder: updating subItem: expansionFraction: " + expansionFraction + ", state: " + state);
             int position = holder.getAdapterPosition();
+
+            // A really stupid method to refresh the selected course list, should be changed later to improve
+            // performance of the adapter (also, there is one similar below!)
+            //mCourseList = this.app.getSelectedCourseList();
+
+            if(position == -1){
+                return;
+            }
+
+            for(Course course: mCourseList){
+                Log.d(TAG, "onCreateViewHolder: showing course(" + course.getCourseName() + "): " +
+                        course.getSelectedCourseCodeList());
+            }
+            Log.d(TAG, "onCreateViewHolder: the size of mCourseList is: " + mCourseList.size() +
+                    ", and the position is: " + position);
+
             Course course = mCourseList.get(position);
             switch (state){
                 case 0:
@@ -129,7 +146,7 @@ public class SelectedCourseListAdapter extends RecyclerView.Adapter<SelectedCour
             });
 
             if(course.isExpandingOnSelectedCourseList()){
-                //holder.expandButton.setAnimation(null);
+                holder.expandButton.setAnimation(null);
             }
 
             holder.expandButton.startAnimation(rotateAnimation);
@@ -137,7 +154,7 @@ public class SelectedCourseListAdapter extends RecyclerView.Adapter<SelectedCour
             //notifyItemChanged(position);
             //Snackbar.make(v, "You clicked view: " + course.getCourseName(), Snackbar.LENGTH_SHORT).show();
             /*
-            Intent intent = new Intent(v.getContext(), CourseDialog.class);
+            Intent intent = new Intent(v.getContext(), Abandoned_CourseDialog.class);
             app.setCurrentSelectedCourseForDialog(course);
             v.getContext().startActivity(intent);
             Activity activity = (Activity) v.getContext();
@@ -164,7 +181,7 @@ public class SelectedCourseListAdapter extends RecyclerView.Adapter<SelectedCour
             if(course.getCourseElement(course.courseCodeList.get(0), "Status") == null){
                 Snackbar.make(view1, view1.getResources().getString(R.string.summer_class_not_available_for_notification), Snackbar.LENGTH_SHORT).show();
             } else {
-                CourseFunctions.getDialogForNotificationOfCourse(view1.getContext(), app,
+                OperationsWithUI.getDialogForNotificationOfCourse(view1.getContext(), app,
                         new AlertDialog.Builder(view1.getContext()), course, 1).show();
                 /*
                 app.setCurrentSelectedCourseForNotificationSwitch(course);
@@ -231,12 +248,12 @@ public class SelectedCourseListAdapter extends RecyclerView.Adapter<SelectedCour
 
         // Setting edit button onClickListener
         relativeLayout.setOnClickListener(v -> {
-            CourseFunctions.getCourseDialogForCourse(context, app, new AlertDialog.Builder(context),
+            OperationsWithUI.getCourseDialogForCourse(context, app, new AlertDialog.Builder(context),
                     app.getCourseFromSelectedCourseList(Integer.valueOf(singleCourseList.get(0).getCourseCode())), 1).show();
             /*
             app.setCurrentSelectedCourseForDialog(app.getCourseFromSelectedCourseList(
                     Integer.valueOf(singleCourseList.get(0).getCourseCode())));
-            context.startActivity(new Intent(context, CourseDialog.class));
+            context.startActivity(new Intent(context, Abandoned_CourseDialog.class));
             */
         });
 
@@ -306,11 +323,11 @@ public class SelectedCourseListAdapter extends RecyclerView.Adapter<SelectedCour
         linearLayout.addView(courseSection);
 
         TextView courseCredit = new TextView(context);
-        courseCredit.setText(String.format(context.getString(R.string.course_dialog_units), singleCourse.getCourseCredit()));
+        courseCredit.setText(String.format(context.getString(R.string.course_dialog_units), singleCourse.getCourseUnits()));
         linearLayout.addView(courseCredit);
 
         TextView courseProfessor = new TextView(context);
-        courseProfessor.setText(String.format(context.getString(R.string.course_dialog_instructor), singleCourse.getCourseProfessor()));
+        courseProfessor.setText(String.format(context.getString(R.string.course_dialog_instructor), singleCourse.getCourseInstructor()));
         linearLayout.addView(courseProfessor);
 
         TextView courseTime = new TextView(context);
@@ -320,14 +337,14 @@ public class SelectedCourseListAdapter extends RecyclerView.Adapter<SelectedCour
 
         TextView courseStatus = new TextView(context);
         courseStatus.setText(String.format(context.getString(R.string.course_dialog_status), singleCourse.getCourseStatus()));
-        courseStatus.setTextColor(context.getResources().getColor(CourseFunctions.getCourseStatusCorrespondingColor(singleCourse.getCourseStatus(), context)));
+        courseStatus.setTextColor(context.getResources().getColor(OperationsWithCourse.getCourseStatusCorrespondingColor(singleCourse.getCourseStatus(), context)));
         linearLayout.addView(courseStatus);
 
         result.addView(linearLayout);
         result.addView(imageView);
 
         result.setOnClickListener(v -> {
-            CourseFunctions.getDialogForSingleCourse(context, app, new AlertDialog.Builder(context),
+            OperationsWithUI.getDialogForSingleCourse(context, app, new AlertDialog.Builder(context),
                     singleCourse, 1).show();
         });
 
@@ -345,8 +362,14 @@ public class SelectedCourseListAdapter extends RecyclerView.Adapter<SelectedCour
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder: start");
+
+        // A stupid method to refresh the selected course list, should be changed later to improve
+        // performance of the adapter
+        mCourseList = this.app.getSelectedCourseList();
+
         Course course = mCourseList.get(position);
         holder.courseName.setText(course.getCourseName());
+
         holder.courseCode.setText(course.getSelectedCourseBasicInfo());
         //holder.bind(course);
 

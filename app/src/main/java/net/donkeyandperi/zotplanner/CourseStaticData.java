@@ -1,10 +1,18 @@
 package net.donkeyandperi.zotplanner;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class CourseStaticData {
+    public static List<String> presetElementNameList = new ArrayList<>(Arrays.asList("Code", "Type",
+            "Sec", "Units", "Instructor", "Time", "Place", "Final", "Max", "Enr", "WL", "Req", "Nor", "Rstr",
+            "Textbooks", "Web", "Status"));
     public static String defaultSearchOptionBreadth = "ANY";
     public static String defaultSearchOptionDept = "ALL";
     public static String defaultSearchOptionDivision = "ANY";
     public static String defaultSearchOptionClassType = "ALL";
+    public static String defaultSearchOptionShowFinals = "1";
     public static String lastSearchOptionForCheck = "level_value_list";
     public static String defaultClassStatusWL = "Waitl";
     public static String defaultClassStatusOpen = "OPEN";

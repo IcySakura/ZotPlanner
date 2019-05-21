@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SelectedCourseListCalendarView"
+    tools:context=".Abandoned_SelectedCourseListCalendarView"
     android:animateLayoutChanges="true">
 
     <androidx.drawerlayout.widget.DrawerLayout
@@ -24,7 +24,7 @@
             xmlns:tools="http://schemas.android.com/tools"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            tools:context=".SelectedCourseListCalendarView">
+            tools:context=".Abandoned_SelectedCourseListCalendarView">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -45,41 +45,7 @@
 
                     </com.google.android.material.appbar.AppBarLayout>
 
-                    <RelativeLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <com.wang.avi.AVLoadingIndicatorView
-                            android:id="@+id/selected_course_list_calendar_view_loading_avi"
-                            android:visibility="gone"
-                            android:paddingTop="?attr/actionBarSize"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            app:indicatorName="LineScaleIndicator"
-                            app:indicatorColor="#000000"
-                            android:layout_centerHorizontal="true"
-                            />
-
-                        <com.alamkanak.weekview.WeekView
-                            android:id="@+id/selected_course_list_week_view"
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
-                            android:background="?android:attr/selectableItemBackground"
-                            app:eventTextColor="@android:color/white"
-                            app:textSize="12sp"
-                            app:hourHeight="60dp"
-                            app:headerColumnPadding="8dp"
-                            app:headerColumnTextColor="@color/toolbar_text"
-                            app:headerRowPadding="12dp"
-                            app:columnGap="8dp"
-                            app:noOfVisibleDays="3"
-                            app:headerRowBackgroundColor="@color/toolbar"
-                            app:dayBackgroundColor="#05000000"
-                            app:todayBackgroundColor="#1848adff"
-                            app:headerColumnBackground="#ffffffff"
-                            app:todayHeaderTextColor="@color/accent" />
-
-                    </RelativeLayout>
+                    <!--Space for previous things of calender view-->
 
                 </LinearLayout>
 

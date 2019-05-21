@@ -13,7 +13,13 @@ E-mail: lyx981mike@gmail.com
 
 Avaibable in Chinese, English, and Japanese.
 
-Latest Version: Beta v1.2.0 (Beta 1)
+Latest Version: Beta v1.2.1 (Beta 1)
+
+05/16/2019  v1.2.1(Beta 1) 
+-	Switch between List view and Calendar view more fluently. 
+-	Now you can see the time of final for each course. 
+-	Now you can see the comments for each course. 
+-	Reduce probability of crash in List View. 
 
 05/16/2019	v1.2.0(Beta 1)
 -	Fixed the bug where some courses are not being shown during search.
