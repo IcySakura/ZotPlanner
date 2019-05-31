@@ -8,7 +8,6 @@ import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
-import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 import android.os.RemoteException;
@@ -22,8 +21,10 @@ import com.google.gson.reflect.TypeToken;
 import org.jsoup.nodes.Document;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -61,6 +62,10 @@ public class MyApp extends Application {
     private Boolean isCourseListRefreshedBySplashActivity = false;
     private Boolean isLanguageJustChanged = false;
     private int currentModeInMainActivity = 0;  // 0 means in List View; 1 means in Calendar View
+
+    // Profile info
+    private String currentAccountString = "default";
+    private int currentProfile = 0;
 
     public void setRegNormalPage(Document regNormalPage){
         this.regNormalPage = regNormalPage;
@@ -169,6 +174,7 @@ public class MyApp extends Application {
     }
 
     public List<Course> getSelectedCourseList() {
+        readSelectedCourseListData();
         return selectedCourseList;
     }
 
@@ -209,7 +215,8 @@ public class MyApp extends Application {
         return count;
     }
 
-    public void saveData(String mainTag, String subTag, Object object){
+    public void saveDataLegacy(String mainTag, String subTag, Object object){
+        // This is a legacy call to save data, it could be deprecated at anytime
         Gson gson = new Gson();
         String dataToBeSaved = gson.toJson(object);
         SharedPreferences.Editor editor = getSharedPreferences(mainTag, MODE_MULTI_PROCESS).edit();
@@ -218,7 +225,8 @@ public class MyApp extends Application {
         editor.commit();
     }
 
-    public Object readData(String mainTag, String subTag, Type objectType){
+    public Object readDataLegacy(String mainTag, String subTag, Type objectType){
+        // This is a legacy call to read data, it could be deprecated at anytime
         Gson gson = new Gson();
         SharedPreferences sharedPreferences = getSharedPreferences(mainTag, MODE_MULTI_PROCESS);
         String dataToBeRead = sharedPreferences.getString(subTag, "");
@@ -228,8 +236,9 @@ public class MyApp extends Application {
         return null;
     }
 
-    public void saveSelectedCourseListData() {
-        saveData("course_related_data", "selected_course_list_data", selectedCourseList);
+    private void clearLegacySeletedCourseListData(){
+        // This function is help to clear the data of selected_course_list in legacy storage
+        saveDataLegacy("course_related_data", "selected_course_list_data", new ArrayList<Course>());
     }
 
     public void clearSelectedCourseListData() {
@@ -243,9 +252,28 @@ public class MyApp extends Application {
         saveSelectedCourseListData();
     }
 
+    public void saveSelectedCourseListData() {
+        // The following first call is trying to save data to legacy part, which is already deprecated now
+        //saveDataLegacy("course_related_data", "selected_course_list_data", selectedCourseList);
+        OperationsWithStorage.saveCourseListData(context, currentAccountString, currentProfile,
+                "selected_course_list_data", selectedCourseList);
+    }
+
     @SuppressWarnings("unchecked")
-    public void readSelectedCourseListData(){
-        List<Course> tempSelectedCourseList = (List<Course>) readData("course_related_data", "selected_course_list_data", new TypeToken<List<Course>>() {}.getType());
+    private void readSelectedCourseListData(){
+        // The falling first call to legacy read has been deprecated, will be deleted later...
+        List<Course> legacyCourseList = (List<Course>) readDataLegacy
+                ("course_related_data", "selected_course_list_data", new TypeToken<List<Course>>() {}.getType());
+        List<Course> tempSelectedCourseList = OperationsWithStorage.getCourseListData(
+                context, currentAccountString, currentProfile, "selected_course_list_data");
+        // Need to move courses from legacy storage to current one; and then delete the legacy storage
+        if(!legacyCourseList.isEmpty()){
+            // Here it detects whether there is any legacy selected_course_List data left; if so, move it to current data and save it
+            Log.d(TAG, "readSelectedCourseListData: " + "Legacy data detected, going to move " + legacyCourseList.size() + " courses " +
+                    "to current storage.");
+            tempSelectedCourseList.addAll(legacyCourseList);
+            clearLegacySeletedCourseListData();
+        }
         if(tempSelectedCourseList != null){
             isSelectedCourseListChanged = true;
             clearSelectedCourseListData();
@@ -265,17 +293,28 @@ public class MyApp extends Application {
         return searchOptions.containsKey(optionName);
     }
 
+    public void clearLegacyLanguageData(){
+        saveDataLegacy("language_settings", "app_language", "null");
+    }
+
     public void saveLanguage(String targetLanguage){
         Log.d("Myles", "saveLanguage: The language is going to be saved as: " + targetLanguage);
-        saveData("language_settings", "app_language", targetLanguage);
+        // The following one line of saving data in legacy storage is deprecated
+        //saveDataLegacy("language_settings", "app_language", targetLanguage);
+        OperationsWithStorage.saveUserLanguagePreference(context, currentAccountString, "app_language", targetLanguage);
     }
 
     public String getSavedLanguage(){
-        String result = (String)readData("language_settings", "app_language", new TypeToken<String>() {}.getType());
-        if(result != null){
-            return result;
+        String legacyResult = (String) readDataLegacy("language_settings", "app_language", new TypeToken<String>() {}.getType());
+        String result = OperationsWithStorage.getUserLanguagePreference(context, currentAccountString, "app_language");
+        if(!legacyResult.equals("null")){
+            // move legacy data to new position
+            Log.d(TAG, "getSavedLanguage: Legacy data detected!");
+            saveLanguage(legacyResult);
+            clearLegacyLanguageData();
+            result = OperationsWithStorage.getUserLanguagePreference(context, currentAccountString, "app_language");
         }
-        return "null";
+        return result;
     }
 
     public void setLanguage(Context context){
@@ -388,12 +427,12 @@ public class MyApp extends Application {
     }
 
     public void saveNotificationSingleCourseList(){
-        saveData("notification_single_course_list", "notification_single_course_list", notificationSingleCourseList);
+        saveDataLegacy("notification_single_course_list", "notification_single_course_list", notificationSingleCourseList);
     }
 
     @SuppressWarnings("unchecked")
     public void readNotificationSingleCourseList(){
-        List<SingleCourse> tempNotificationSingleCourseList = (List<SingleCourse>) readData("notification_single_course_list", "notification_single_course_list", new TypeToken<List<SingleCourse>>() {}.getType());
+        List<SingleCourse> tempNotificationSingleCourseList = (List<SingleCourse>) readDataLegacy("notification_single_course_list", "notification_single_course_list", new TypeToken<List<SingleCourse>>() {}.getType());
         if(tempNotificationSingleCourseList != null){
             notificationSingleCourseList = tempNotificationSingleCourseList;
         }
@@ -520,11 +559,11 @@ public class MyApp extends Application {
     }
 
     public void saveCheckingTimeInterval(){
-        saveData("time_settings", "time_interval", checkingInterval);
+        saveDataLegacy("time_settings", "time_interval", checkingInterval);
     }
 
     public void readCheckingTimeInterval(){
-        Integer tempCheckingInterval = (Integer)readData("time_settings", "time_interval", new TypeToken<Integer>() {}.getType());
+        Integer tempCheckingInterval = (Integer) readDataLegacy("time_settings", "time_interval", new TypeToken<Integer>() {}.getType());
         if(tempCheckingInterval == null){
             checkingInterval = CourseStaticData.checkingTimeInterval5Min;
         } else {
@@ -563,12 +602,12 @@ public class MyApp extends Application {
     }
 
     public void saveCachedInstructionBeginAndEndDates(){
-        saveData("instruction_begin_and_end_dates", "cached_instruction_begin_and_end_dates", cachedInstructionBeginAndEndDates);
+        saveDataLegacy("instruction_begin_and_end_dates", "cached_instruction_begin_and_end_dates", cachedInstructionBeginAndEndDates);
     }
 
     @SuppressWarnings("unchecked")
     public void readCachedInstructionBeginAndEndDates(){
-        HashMap<String, List<Date>> tempCachedInstructionBeginAndEndDates = (HashMap<String, List<Date>>) readData("instruction_begin_and_end_dates", "cached_instruction_begin_and_end_dates", new TypeToken<HashMap<String, List<Date>>>() {}.getType());
+        HashMap<String, List<Date>> tempCachedInstructionBeginAndEndDates = (HashMap<String, List<Date>>) readDataLegacy("instruction_begin_and_end_dates", "cached_instruction_begin_and_end_dates", new TypeToken<HashMap<String, List<Date>>>() {}.getType());
         if(tempCachedInstructionBeginAndEndDates != null){
             cachedInstructionBeginAndEndDates = tempCachedInstructionBeginAndEndDates;
         }
@@ -585,12 +624,12 @@ public class MyApp extends Application {
     }
 
     private void saveNotificationWhenStatus(){
-        saveData("notification_status_settings", "notify_me_when", notificationWhenStatus);
+        saveDataLegacy("notification_status_settings", "notify_me_when", notificationWhenStatus);
     }
 
     @SuppressWarnings("unchecked")
     public void readNotificationWhenStatus(){
-        List<String> tempNotificationWhenStatus = (List<String>)readData("notification_status_settings", "notify_me_when", new TypeToken<List<String>>() {}.getType());
+        List<String> tempNotificationWhenStatus = (List<String>) readDataLegacy("notification_status_settings", "notify_me_when", new TypeToken<List<String>>() {}.getType());
         if(tempNotificationWhenStatus != null){
             notificationWhenStatus.clear();
             notificationWhenStatus = tempNotificationWhenStatus;
@@ -606,11 +645,11 @@ public class MyApp extends Application {
 
     public void setAndSaveKeepNotifyMe(boolean knm){
         keepNotifyMeSwitch = knm;
-        saveData("keep_notify_me_settings", "keep_notify_me", keepNotifyMeSwitch);
+        saveDataLegacy("keep_notify_me_settings", "keep_notify_me", keepNotifyMeSwitch);
     }
 
     public void readKeepNotifyMe(){
-        Boolean tempKeepNotifyMeSwitch = (Boolean) readData("keep_notify_me_settings", "keep_notify_me", new TypeToken<Boolean>() {}.getType());
+        Boolean tempKeepNotifyMeSwitch = (Boolean) readDataLegacy("keep_notify_me_settings", "keep_notify_me", new TypeToken<Boolean>() {}.getType());
         if(tempKeepNotifyMeSwitch != null) {
             keepNotifyMeSwitch = tempKeepNotifyMeSwitch;
         }

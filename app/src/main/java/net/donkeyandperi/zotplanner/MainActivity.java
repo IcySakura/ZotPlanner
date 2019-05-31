@@ -99,7 +99,6 @@ public class MainActivity extends AppCompatActivity
 
         setContentView(R.layout.activity_main);
         app.readNotificationSingleCourseList();
-        app.readSelectedCourseListData();
         app.readCachedInstructionBeginAndEndDates();
         selectedCourseListAdapter = new SelectedCourseListAdapter(app);
 

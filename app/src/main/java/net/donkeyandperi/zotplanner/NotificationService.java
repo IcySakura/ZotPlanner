@@ -68,7 +68,6 @@ public class NotificationService extends Service {
         Log.i("Notification ", "notification service onStartCommand executed...");
         //return super.onStartCommand(intent, flags, startId);
         Log.i("Notification ", "Start Printing (NotificationService)");
-        app.readSelectedCourseListData();
         app.readNotificationWhenStatus();
         app.readKeepNotifyMe();
         Log.i("Notification ", "SelectedCourseListSize: " + String.valueOf(app.getSelectedCourseList().size()));

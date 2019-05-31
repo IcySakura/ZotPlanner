@@ -11,10 +11,12 @@ import com.google.gson.Gson;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -139,6 +141,12 @@ public class OperationsWithCourse {
         List<Course> courseList = new ArrayList<>();
         String currentCourseNum = null;
         boolean isAbleToContinue = true;
+        Elements schoolCommentList = elements.select("tr > div[class=college-comment]");
+        Log.d(TAG, "School comments size: " + schoolCommentList.size());
+        if(schoolCommentList.size() > 0){
+            String schoolComments = schoolCommentList.get(0).text();
+            Log.d(TAG, "parseHtmlForCourseList: school comments: " + schoolComments);
+        }
         for (int i = 0; i < elements.size(); ++i) {
             subElementsTitle = elements.get(i).select("td");
             //Log.i("Notification ", "Size of subElementsTitle is: " + subElementsTitle.size());
