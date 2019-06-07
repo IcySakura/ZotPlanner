@@ -31,7 +31,6 @@ public class OperationsWithUI {
         RecyclerView recyclerView = courseDialogView.findViewById(R.id.notification_dialog_recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(linearLayoutManager);
-        app.readNotificationSingleCourseList(); // This is bad, should not be called at all, fix it!
         NotificationListAdapter notificationListAdapter = new NotificationListAdapter(course, context, app);
         recyclerView.setAdapter(notificationListAdapter);
         alertDialogBuilder.setView(courseDialogView);

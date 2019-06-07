@@ -98,7 +98,6 @@ public class MainActivity extends AppCompatActivity
         setTitle(R.string.app_name);
 
         setContentView(R.layout.activity_main);
-        app.readNotificationSingleCourseList();
         app.readCachedInstructionBeginAndEndDates();
         selectedCourseListAdapter = new SelectedCourseListAdapter(app);
 
@@ -382,7 +381,6 @@ public class MainActivity extends AppCompatActivity
         runOnUiThread(() -> {
             if(app.getCurrentModeInMainActivity() == 0){
                 //avLoadingIndicatorView.hide();
-                app.readNotificationSingleCourseList();
                 Log.d(TAG, "Before notifying data changed: " + app.getSelectedCourseCodeList());
                 List<Course> tempCourseList = app.getSelectedCourseList();
                 for (Course course: tempCourseList){

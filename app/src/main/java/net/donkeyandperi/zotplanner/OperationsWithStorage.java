@@ -54,6 +54,22 @@ public class OperationsWithStorage {
         return result;
     }
 
+    public static boolean saveNotificationSingleCourseList(Context context, String accountString, String fileName,
+                                                           List<SingleCourse> notificationSingleCourseList){
+        return writeStringToDocumentsFolder(context, accountString, fileName, getGsonString(notificationSingleCourseList));
+    }
+
+    public static List<SingleCourse> getNotificationSingleCourseList(Context context, String accountString, String fileName){
+        // Return an empty list if there is no data found in the file
+        List<SingleCourse> resultList = new ArrayList<>();
+        String notificationSingleCourseListStringData = tryReadStringFromFileInDocumentsFolder(context, accountString, fileName);
+        if(!notificationSingleCourseListStringData.isEmpty()){
+            Gson gson = new Gson();
+            resultList.addAll(gson.fromJson(notificationSingleCourseListStringData, new TypeToken<List<SingleCourse>>(){}.getType()));
+        }
+        return resultList;
+    }
+
     private static String getGsonString(Object object){
         Gson gson = new Gson();
         return gson.toJson(object);

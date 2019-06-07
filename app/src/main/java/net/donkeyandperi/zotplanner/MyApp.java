@@ -44,7 +44,7 @@ public class MyApp extends Application {
     HashMap<String, List<String>> searchOptions = new HashMap<>();
     String currentLanguage = "default";
     Course currentSelectedCourseForNotificationSwitch = null;
-    List<SingleCourse> notificationSingleCourseList = new ArrayList<>();
+    private List<SingleCourse> notificationSingleCourseList = new ArrayList<>();
     boolean isSelectedCourseListChanged = true;
     private INotificationService iNotificationService;
     private ServiceConnection notificationServiceConnection;
@@ -252,10 +252,10 @@ public class MyApp extends Application {
         saveSelectedCourseListData();
     }
 
-    public void saveSelectedCourseListData() {
+    public boolean saveSelectedCourseListData() {
         // The following first call is trying to save data to legacy part, which is already deprecated now
         //saveDataLegacy("course_related_data", "selected_course_list_data", selectedCourseList);
-        OperationsWithStorage.saveCourseListData(context, currentAccountString, currentProfile,
+        return OperationsWithStorage.saveCourseListData(context, currentAccountString, currentProfile,
                 "selected_course_list_data", selectedCourseList);
     }
 
@@ -297,11 +297,11 @@ public class MyApp extends Application {
         saveDataLegacy("language_settings", "app_language", "null");
     }
 
-    public void saveLanguage(String targetLanguage){
+    public boolean saveLanguage(String targetLanguage){
         Log.d("Myles", "saveLanguage: The language is going to be saved as: " + targetLanguage);
         // The following one line of saving data in legacy storage is deprecated
         //saveDataLegacy("language_settings", "app_language", targetLanguage);
-        OperationsWithStorage.saveUserLanguagePreference(context, currentAccountString, "app_language", targetLanguage);
+        return OperationsWithStorage.saveUserLanguagePreference(context, currentAccountString, "app_language", targetLanguage);
     }
 
     public String getSavedLanguage(){
@@ -372,6 +372,7 @@ public class MyApp extends Application {
     }
 
     public void addNotificationSingleCourseList(SingleCourse singleCourse){
+        readNotificationSingleCourseList();
         for(SingleCourse sc: notificationSingleCourseList){
             if(sc.getCourseCode().equals(singleCourse.getCourseCode())){
                 return;
@@ -382,10 +383,12 @@ public class MyApp extends Application {
     }
 
     public List<SingleCourse> getNotificationSingleCourseList(){
+        readNotificationSingleCourseList();
         return notificationSingleCourseList;
     }
 
     public List<String> getNotificationCourseCodeList(){
+        readNotificationSingleCourseList();
         List<String> result = new ArrayList<>();
         for(SingleCourse singleCourse: notificationSingleCourseList){
             result.add(singleCourse.getCourseCode());
@@ -394,6 +397,7 @@ public class MyApp extends Application {
     }
 
     public void removeSingleCourseFromNotificationSingleCourseList(SingleCourse singleCourse){
+        readNotificationSingleCourseList();
         for(SingleCourse sc: notificationSingleCourseList){
             if(sc.getCourseCode().equals(singleCourse.getCourseCode())){
                 notificationSingleCourseList.remove(sc);
@@ -405,6 +409,7 @@ public class MyApp extends Application {
     }
 
     public boolean checkSingleCourseInNotificationSingleCourseList(SingleCourse singleCourse){
+        readNotificationSingleCourseList();
         for(SingleCourse sc: notificationSingleCourseList){
             if(sc.getCourseCode().equals(singleCourse.getCourseCode())){
                 return true;
@@ -414,6 +419,7 @@ public class MyApp extends Application {
     }
 
     public void clearNotificationSingleCourseList(){
+        readNotificationSingleCourseList();
         if(!notificationSingleCourseList.isEmpty()){
             notificationSingleCourseList.clear();
             saveNotificationSingleCourseList();
@@ -427,14 +433,32 @@ public class MyApp extends Application {
     }
 
     public void saveNotificationSingleCourseList(){
-        saveDataLegacy("notification_single_course_list", "notification_single_course_list", notificationSingleCourseList);
+        OperationsWithStorage.saveNotificationSingleCourseList(context, currentAccountString,
+                "notification_single_course_list", notificationSingleCourseList);
+        // The following line is a legacy save function that has been deprecated
+        //saveDataLegacy("notification_single_course_list", "notification_single_course_list", notificationSingleCourseList);
+    }
+
+    private void clearLegacyNotificationSingleCourseListData(){
+        saveDataLegacy("notification_single_course_list", "notification_single_course_list", new ArrayList<SingleCourse>());
     }
 
     @SuppressWarnings("unchecked")
-    public void readNotificationSingleCourseList(){
-        List<SingleCourse> tempNotificationSingleCourseList = (List<SingleCourse>) readDataLegacy("notification_single_course_list", "notification_single_course_list", new TypeToken<List<SingleCourse>>() {}.getType());
-        if(tempNotificationSingleCourseList != null){
-            notificationSingleCourseList = tempNotificationSingleCourseList;
+    private void readNotificationSingleCourseList(){
+        List<SingleCourse> tempLegacyNotificationSingleCourseList = (List<SingleCourse>) readDataLegacy(
+                "notification_single_course_list", "notification_single_course_list",
+                new TypeToken<List<SingleCourse>>() {}.getType());
+        List<SingleCourse> tempNotificationSingleCourseList =
+                OperationsWithStorage.getNotificationSingleCourseList(context, currentAccountString,
+                        "notification_single_course_list");
+        notificationSingleCourseList.clear();
+        notificationSingleCourseList.addAll(tempNotificationSingleCourseList);
+        if(tempLegacyNotificationSingleCourseList != null){
+            Log.d(TAG, "readNotificationSingleCourseList: Data detected in legacy, " +
+                    "going to clear..., the length is: " + tempLegacyNotificationSingleCourseList.size());
+            notificationSingleCourseList.addAll(tempLegacyNotificationSingleCourseList);
+            clearLegacyNotificationSingleCourseListData();
+            saveNotificationSingleCourseList();
         }
     }
 
@@ -447,6 +471,7 @@ public class MyApp extends Application {
     }
 
     public void refreshNotificationService(Context context){
+        readNotificationSingleCourseList();
         Intent serviceStatus = new Intent(this, NotificationService.class);
         Log.i("Notification ", "refreshNotificationService checking whether empty " + notificationSingleCourseList.isEmpty());
         if(notificationSingleCourseList.isEmpty())

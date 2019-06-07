@@ -16,7 +16,6 @@ public class NotificationList extends AppCompatActivity {
         setContentView(R.layout.notification_dialog);
         setTitle(R.string.notification_list_label);
         app = (MyApp) getApplication();
-        app.readNotificationSingleCourseList();
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.notification_dialog_recycler_view);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearLayoutManager);

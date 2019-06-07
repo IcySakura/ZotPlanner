@@ -175,7 +175,6 @@ public class NotificationService extends Service {
     }
 
     private void removeAllDeadTimerTask(){
-        app.readNotificationSingleCourseList();
         if(!previousSelectedSingleCourseList.isEmpty()){
             for(SingleCourse singleCourse: previousSelectedSingleCourseList){
                 if(!app.checkSingleCourseInNotificationSingleCourseList(singleCourse)){
