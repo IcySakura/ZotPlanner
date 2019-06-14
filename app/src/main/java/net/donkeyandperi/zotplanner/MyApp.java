@@ -151,25 +151,51 @@ public class MyApp extends Application {
 
     public void updateCourseToSelectedCourseList(Course course)
     {
-        isSelectedCourseListChanged = true;
-        Log.i("Notification ", "Changing isSelectedCourseListChanged to true.(updateCourseToSelectedCourseList)");
-        for (Course course_old: selectedCourseList){
-            // Below we no longer compare two courses' names because UCI might change the course name
-            // at some time
-            if(course_old.isSameCourse(course)){
-                Log.i("CourseName ", course.getCourseName());
-                Log.i("SizeOfList ", String.valueOf(course.courseList.size()));
-                Log.i("SizeOfCourse ", String.valueOf(course.courseCodeList.size()));
-                Log.d(TAG, "updateCourseToSelectedCourseList: going to replace " + course.getCourseCodeList().get(0) + " with: " +
-                        course.getCourseCodeHashMap(course.getCourseCodeList().get(0)));
-                course_old.replaceCourseElementHashMap(course.getCourseCodeList().get(0), course.getCourseCodeHashMap(course.getCourseCodeList().get(0)));
-                // The one line below is for adding "Final" to elementNameList, mainly for transition of the app
-                // which should be deleted later 05/18/2019
-                course_old.setCourseElementNameList(CourseStaticData.presetElementNameList);
+        int lengthOfSelectedCourseList = selectedCourseList.size();
+        boolean isClassFound = false;
+        int indexOfCourse = 0;
+        for( ; indexOfCourse < lengthOfSelectedCourseList; ++indexOfCourse){
+            if(selectedCourseList.get(indexOfCourse).isSameCourse(course)){
+                isClassFound = true;
                 break;
             }
         }
+        if(isClassFound){
+            isSelectedCourseListChanged = true;
+            Log.i(TAG, "updateCourseToSelectedCourseList: " +
+                    "Changing isSelectedCourseListChanged to true.(updateCourseToSelectedCourseList)");
+            course.setSelectedCourseCodeList(selectedCourseList.get(indexOfCourse).getSelectedCourseCodeList());
+            course.setExpandedOnSelectedCourseList(selectedCourseList.get(indexOfCourse).isExpandedOnSelectedCourseList());
+            course.setExpandingOnSelectedCourseList(selectedCourseList.get(indexOfCourse).isExpandingOnSelectedCourseList());
+            selectedCourseList.remove(indexOfCourse);
+            selectedCourseList.add(indexOfCourse, course);
+            Log.i(TAG, "updateCourseToSelectedCourseList: is the new course expanded: "
+                    + course.isExpandedOnSelectedCourseList());
+        }
         //selectedCourseList.add(course);   // if the add of index work, this line is useless
+        saveSelectedCourseListData();
+    }
+
+    public void updateCourseWithNewExpandedStateInSelectedCourseList(Course course){
+        int lengthOfSelectedCourseList = selectedCourseList.size();
+        boolean isClassFound = false;
+        int indexOfCourse = 0;
+        for( ; indexOfCourse < lengthOfSelectedCourseList; ++indexOfCourse){
+            if(selectedCourseList.get(indexOfCourse).isSameCourse(course)){
+                isClassFound = true;
+                break;
+            }
+        }
+        if(isClassFound){
+            isSelectedCourseListChanged = true;
+            Course old_course = selectedCourseList.get(indexOfCourse);
+            old_course.setExpandedOnSelectedCourseList(course.isExpandedOnSelectedCourseList());
+            old_course.setExpandingOnSelectedCourseList(course.isExpandingOnSelectedCourseList());
+            selectedCourseList.remove(indexOfCourse);
+            selectedCourseList.add(indexOfCourse, old_course);
+            Log.i(TAG, "updateCourseWithNewExpandedStateInSelectedCourseList: is the new course expanded: "
+                    + course.isExpandedOnSelectedCourseList());
+        }
         saveSelectedCourseListData();
     }
 
@@ -432,8 +458,8 @@ public class MyApp extends Application {
         }
     }
 
-    public void saveNotificationSingleCourseList(){
-        OperationsWithStorage.saveNotificationSingleCourseList(context, currentAccountString,
+    public boolean saveNotificationSingleCourseList(){
+        return OperationsWithStorage.saveNotificationSingleCourseList(context, currentAccountString,
                 "notification_single_course_list", notificationSingleCourseList);
         // The following line is a legacy save function that has been deprecated
         //saveDataLegacy("notification_single_course_list", "notification_single_course_list", notificationSingleCourseList);
@@ -583,16 +609,26 @@ public class MyApp extends Application {
         return checkingInterval;
     }
 
-    public void saveCheckingTimeInterval(){
-        saveDataLegacy("time_settings", "time_interval", checkingInterval);
+    public boolean saveCheckingTimeInterval(){
+        // The following line is a legacy way of saving data, which has been deprecated
+        //saveDataLegacy("time_settings", "time_interval", checkingInterval);
+        return OperationsWithStorage.saveCheckingTimeInterval(context, currentAccountString,
+                "course_checking_time_interval", checkingInterval);
+    }
+
+    public void clearLegacyCheckingTimeInterval(){
+        saveDataLegacy("time_settings", "time_interval", null);
     }
 
     public void readCheckingTimeInterval(){
-        Integer tempCheckingInterval = (Integer) readDataLegacy("time_settings", "time_interval", new TypeToken<Integer>() {}.getType());
-        if(tempCheckingInterval == null){
-            checkingInterval = CourseStaticData.checkingTimeInterval5Min;
+        Integer tempLegacyCheckingInterval = (Integer) readDataLegacy("time_settings", "time_interval", new TypeToken<Integer>() {}.getType());
+        if(tempLegacyCheckingInterval != null){
+            checkingInterval = tempLegacyCheckingInterval;
+            saveCheckingTimeInterval();
+            clearLegacyCheckingTimeInterval();
         } else {
-            checkingInterval = tempCheckingInterval;
+            checkingInterval = OperationsWithStorage.getCheckingTimeInterval(context,
+                    currentAccountString, "course_checking_time_interval");
         }
         Log.i("Notification ", "After reading checkingTimeInterval: " + checkingInterval);
     }
@@ -626,15 +662,33 @@ public class MyApp extends Application {
         iCourse.setIsDateSet(true);
     }
 
-    public void saveCachedInstructionBeginAndEndDates(){
-        saveDataLegacy("instruction_begin_and_end_dates", "cached_instruction_begin_and_end_dates", cachedInstructionBeginAndEndDates);
+    public boolean saveCachedInstructionBeginAndEndDates(){
+        // The following line uses a legacy saving method, which has been deprecated
+//        saveDataLegacy("instruction_begin_and_end_dates",
+//                "cached_instruction_begin_and_end_dates", cachedInstructionBeginAndEndDates);
+        return OperationsWithStorage.saveCachedInstructionBeginAndEndDates(context, currentAccountString,
+                "cached_instruction_begin_and_end_dates", cachedInstructionBeginAndEndDates);
+    }
+
+    public void clearLegacyCachedInstructionBeginAndEndDatesSavedData(){
+        Log.d(TAG, "clearLegacyCachedInstructionBeginAndEndDatesSavedData: clearing legacy data...");
+        saveDataLegacy("instruction_begin_and_end_dates",
+                "cached_instruction_begin_and_end_dates", null);
     }
 
     @SuppressWarnings("unchecked")
     public void readCachedInstructionBeginAndEndDates(){
-        HashMap<String, List<Date>> tempCachedInstructionBeginAndEndDates = (HashMap<String, List<Date>>) readDataLegacy("instruction_begin_and_end_dates", "cached_instruction_begin_and_end_dates", new TypeToken<HashMap<String, List<Date>>>() {}.getType());
-        if(tempCachedInstructionBeginAndEndDates != null){
-            cachedInstructionBeginAndEndDates = tempCachedInstructionBeginAndEndDates;
+        HashMap<String, List<Date>> tempLegacyCachedInstructionBeginAndEndDates =
+                (HashMap<String, List<Date>>) readDataLegacy("instruction_begin_and_end_dates",
+                        "cached_instruction_begin_and_end_dates", new TypeToken<HashMap<String, List<Date>>>() {}.getType());
+        if(tempLegacyCachedInstructionBeginAndEndDates != null){
+            cachedInstructionBeginAndEndDates = tempLegacyCachedInstructionBeginAndEndDates;
+            saveCachedInstructionBeginAndEndDates();
+            clearLegacyCachedInstructionBeginAndEndDatesSavedData();
+        } else {
+            cachedInstructionBeginAndEndDates =
+                    OperationsWithStorage.getCachedInstructionBeginAndEndDates(context,
+                            currentAccountString, "cached_instruction_begin_and_end_dates");
         }
     }
 
@@ -648,17 +702,31 @@ public class MyApp extends Application {
         restartNotificationService();
     }
 
-    private void saveNotificationWhenStatus(){
-        saveDataLegacy("notification_status_settings", "notify_me_when", notificationWhenStatus);
+    private boolean saveNotificationWhenStatus(){
+        // The following line is a way of saving data in legacy mode, which has been deprecated
+        //saveDataLegacy("notification_status_settings", "notify_me_when", notificationWhenStatus);
+        return OperationsWithStorage.saveNotificationWhenStatus(context, currentAccountString,
+                "notification_notify_me_when_settings", notificationWhenStatus);
+    }
+
+    private void clearLegacyNotificationWhenStatus(){
+        Log.d(TAG, "clearLegacyNotificationWhenStatus: clearing legacy data...");
+        saveDataLegacy("notification_status_settings", "notify_me_when", null);
     }
 
     @SuppressWarnings("unchecked")
     public void readNotificationWhenStatus(){
-        List<String> tempNotificationWhenStatus = (List<String>) readDataLegacy("notification_status_settings", "notify_me_when", new TypeToken<List<String>>() {}.getType());
-        if(tempNotificationWhenStatus != null){
+        List<String> tempLegacyNotificationWhenStatus = (List<String>) readDataLegacy("notification_status_settings", "notify_me_when", new TypeToken<List<String>>() {}.getType());
+        if(tempLegacyNotificationWhenStatus != null){
             notificationWhenStatus.clear();
-            notificationWhenStatus = tempNotificationWhenStatus;
+            notificationWhenStatus = tempLegacyNotificationWhenStatus;
+            saveNotificationWhenStatus();
+            clearLegacyNotificationWhenStatus();
         } else {
+            notificationWhenStatus = OperationsWithStorage.getNotificationWhenStatus(context,
+                    currentAccountString, "notification_notify_me_when_settings");
+        }
+        if(notificationWhenStatus.isEmpty()){
             notificationWhenStatus.add(CourseStaticData.defaultClassStatusOpen);
         }
     }
@@ -670,13 +738,23 @@ public class MyApp extends Application {
 
     public void setAndSaveKeepNotifyMe(boolean knm){
         keepNotifyMeSwitch = knm;
-        saveDataLegacy("keep_notify_me_settings", "keep_notify_me", keepNotifyMeSwitch);
+        // The following line is a way of saving data in legacy mode, which has been deprecated
+        //saveDataLegacy("keep_notify_me_settings", "keep_notify_me", keepNotifyMeSwitch);
+        OperationsWithStorage.saveKeepNotifyMe(context, currentAccountString, "keep_notify_me_settings", keepNotifyMeSwitch);
+    }
+
+    public void clearLegacyKeepNotifyMeSavedData(){
+        Log.d(TAG, "clearLegacyKeepNotifyMeSavedData: clearing legacy data...");
+        saveDataLegacy("keep_notify_me_settings", "keep_notify_me", null);
     }
 
     public void readKeepNotifyMe(){
-        Boolean tempKeepNotifyMeSwitch = (Boolean) readDataLegacy("keep_notify_me_settings", "keep_notify_me", new TypeToken<Boolean>() {}.getType());
-        if(tempKeepNotifyMeSwitch != null) {
-            keepNotifyMeSwitch = tempKeepNotifyMeSwitch;
+        Boolean tempLegacyKeepNotifyMeSwitch = (Boolean) readDataLegacy("keep_notify_me_settings", "keep_notify_me", new TypeToken<Boolean>() {}.getType());
+        if(tempLegacyKeepNotifyMeSwitch != null) {
+            setAndSaveKeepNotifyMe(tempLegacyKeepNotifyMeSwitch);
+            clearLegacyKeepNotifyMeSavedData();
+        } else {
+            keepNotifyMeSwitch = OperationsWithStorage.getKeepNotifyMe(context, currentAccountString, "keep_notify_me_settings");
         }
     }
 

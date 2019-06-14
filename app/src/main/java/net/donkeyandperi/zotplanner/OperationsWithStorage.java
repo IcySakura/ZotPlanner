@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 public class OperationsWithStorage {
@@ -68,6 +70,66 @@ public class OperationsWithStorage {
             resultList.addAll(gson.fromJson(notificationSingleCourseListStringData, new TypeToken<List<SingleCourse>>(){}.getType()));
         }
         return resultList;
+    }
+
+    public static boolean saveCheckingTimeInterval(Context context, String accountString, String fileName, int checkingInterval){
+        return writeStringToDocumentsFolder(context, accountString, fileName, getGsonString(checkingInterval));
+    }
+
+    public static int getCheckingTimeInterval(Context context, String accountString, String fileName){
+        // Return CourseStaticData.checkingTimeInterval5Min if there is no data found in the file
+        String resultCheckingIntervalStringData = tryReadStringFromFileInDocumentsFolder(context, accountString, fileName);
+        if(!resultCheckingIntervalStringData.isEmpty()) {
+            Gson gson = new Gson();
+            return gson.fromJson(resultCheckingIntervalStringData, new TypeToken<Integer>(){}.getType());
+        }
+        return CourseStaticData.checkingTimeInterval5Min;
+    }
+
+    public static boolean saveCachedInstructionBeginAndEndDates(Context context, String accountString,
+                                                                String fileName, HashMap<String, List<Date>> cachedInstructionBeginAndEndDates){
+        return writeStringToDocumentsFolder(context, accountString, fileName, getGsonString(cachedInstructionBeginAndEndDates));
+    }
+
+    public static HashMap<String, List<Date>> getCachedInstructionBeginAndEndDates(Context context, String accountString, String fileName){
+        // Return empty HashMap if there is no data found in the file
+        String resultCachedHashMapStringData = tryReadStringFromFileInDocumentsFolder(context, accountString, fileName);
+        if(!resultCachedHashMapStringData.isEmpty()){
+            Gson gson = new Gson();
+            return gson.fromJson(resultCachedHashMapStringData, new TypeToken<HashMap<String, List<Date>>>(){}.getType());
+        }
+        return new HashMap<>();
+    }
+
+    public static boolean saveNotificationWhenStatus(Context context, String accountString,
+                                                     String fileName, List<String> notificationWhenStatus){
+        return writeStringToDocumentsFolder(context, accountString, fileName, getGsonString(notificationWhenStatus));
+    }
+
+    public static List<String> getNotificationWhenStatus(Context context, String accountString, String fileName){
+        // Return empty list if there is no data found in the file
+        List<String> resultList = new ArrayList<>();
+        String resultListStringData = tryReadStringFromFileInDocumentsFolder(context, accountString, fileName);
+        if(!resultListStringData.isEmpty()){
+            Gson gson = new Gson();
+            resultList.addAll(gson.fromJson(resultListStringData, new TypeToken<List<String>>(){}.getType()));
+        }
+        return resultList;
+    }
+
+    public static boolean saveKeepNotifyMe(Context context, String accountString, String fileName, boolean knm){
+        return writeStringToDocumentsFolder(context, accountString, fileName, getGsonString(knm));
+    }
+
+    public static boolean getKeepNotifyMe(Context context, String accountString, String fileName){
+        // Return false if there is no data found in the file
+        boolean resultOfKNM = false;
+        String resultOfKNMStringData = tryReadStringFromFileInDocumentsFolder(context, accountString, fileName);
+        if(!resultOfKNMStringData.isEmpty()){
+            Gson gson = new Gson();
+            resultOfKNM = gson.fromJson(resultOfKNMStringData, new TypeToken<Boolean>(){}.getType());
+        }
+        return resultOfKNM;
     }
 
     private static String getGsonString(Object object){

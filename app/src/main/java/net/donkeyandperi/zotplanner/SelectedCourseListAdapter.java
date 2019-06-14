@@ -79,10 +79,10 @@ public class SelectedCourseListAdapter extends RecyclerView.Adapter<SelectedCour
                 return;
             }
 
-            for(Course course: mCourseList){
-                Log.d(TAG, "onCreateViewHolder: showing course(" + course.getCourseName() + "): " +
-                        course.getSelectedCourseCodeList());
-            }
+//            for(Course course: mCourseList){
+//                Log.d(TAG, "onCreateViewHolder: showing course(" + course.getCourseName() + "): " +
+//                        course.getSelectedCourseCodeList());
+//            }
             Log.d(TAG, "onCreateViewHolder: the size of mCourseList is: " + mCourseList.size() +
                     ", and the position is: " + position);
 
@@ -91,6 +91,8 @@ public class SelectedCourseListAdapter extends RecyclerView.Adapter<SelectedCour
                 case 0:
                     course.setExpandedOnSelectedCourseList(false);
                     course.setExpandingOnSelectedCourseList(false);
+                    // Need to save state of expanded here (or other place which can improve performance if possible)
+                    app.updateCourseWithNewExpandedStateInSelectedCourseList(course);
                     break;
                 case 1:
                     course.setExpandedOnSelectedCourseList(false);
@@ -99,6 +101,8 @@ public class SelectedCourseListAdapter extends RecyclerView.Adapter<SelectedCour
                 case 2:
                     course.setExpandedOnSelectedCourseList(true);
                     course.setExpandingOnSelectedCourseList(true);
+                    // Need to save state of expanded here (or other place which can improve performance if possible)
+                    app.updateCourseWithNewExpandedStateInSelectedCourseList(course);
                     break;
                 case 3:
                     course.setExpandedOnSelectedCourseList(true);
@@ -117,6 +121,7 @@ public class SelectedCourseListAdapter extends RecyclerView.Adapter<SelectedCour
             //Log.d(TAG, "The animation start from degrees: " + startDegrees);
             // Here the animation should be opposite
             if(!course.isExpandedOnSelectedCourseList()){
+
                 Log.d(TAG, "Going to prepare animation: from: " + startDegrees + ", to: " + 180);
                 prepareRotateAnimation(startDegrees, 180);
             } else {
