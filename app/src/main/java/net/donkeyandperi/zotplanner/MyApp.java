@@ -164,11 +164,13 @@ public class MyApp extends Application {
             isSelectedCourseListChanged = true;
             Log.i(TAG, "updateCourseToSelectedCourseList: " +
                     "Changing isSelectedCourseListChanged to true.(updateCourseToSelectedCourseList)");
-            course.setSelectedCourseCodeList(selectedCourseList.get(indexOfCourse).getSelectedCourseCodeList());
-            course.setExpandedOnSelectedCourseList(selectedCourseList.get(indexOfCourse).isExpandedOnSelectedCourseList());
-            course.setExpandingOnSelectedCourseList(selectedCourseList.get(indexOfCourse).isExpandingOnSelectedCourseList());
+            Course old_course = selectedCourseList.get(indexOfCourse);
+            old_course.updateSingleCourseInfoList(course);
+//            course.setSelectedCourseCodeList(selectedCourseList.get(indexOfCourse).getSelectedCourseCodeList());
+//            course.setExpandedOnSelectedCourseList(selectedCourseList.get(indexOfCourse).isExpandedOnSelectedCourseList());
+//            course.setExpandingOnSelectedCourseList(selectedCourseList.get(indexOfCourse).isExpandingOnSelectedCourseList());
             selectedCourseList.remove(indexOfCourse);
-            selectedCourseList.add(indexOfCourse, course);
+            selectedCourseList.add(indexOfCourse, old_course);
             Log.i(TAG, "updateCourseToSelectedCourseList: is the new course expanded: "
                     + course.isExpandedOnSelectedCourseList());
         }
@@ -264,7 +266,7 @@ public class MyApp extends Application {
 
     private void clearLegacySeletedCourseListData(){
         // This function is help to clear the data of selected_course_list in legacy storage
-        saveDataLegacy("course_related_data", "selected_course_list_data", new ArrayList<Course>());
+        saveDataLegacy("course_related_data", "selected_course_list_data", null);
     }
 
     public void clearSelectedCourseListData() {
@@ -293,7 +295,7 @@ public class MyApp extends Application {
         List<Course> tempSelectedCourseList = OperationsWithStorage.getCourseListData(
                 context, currentAccountString, currentProfile, "selected_course_list_data");
         // Need to move courses from legacy storage to current one; and then delete the legacy storage
-        if(!legacyCourseList.isEmpty()){
+        if(legacyCourseList!= null && !legacyCourseList.isEmpty()){
             // Here it detects whether there is any legacy selected_course_List data left; if so, move it to current data and save it
             Log.d(TAG, "readSelectedCourseListData: " + "Legacy data detected, going to move " + legacyCourseList.size() + " courses " +
                     "to current storage.");
@@ -320,7 +322,7 @@ public class MyApp extends Application {
     }
 
     public void clearLegacyLanguageData(){
-        saveDataLegacy("language_settings", "app_language", "null");
+        saveDataLegacy("language_settings", "app_language", null);
     }
 
     public boolean saveLanguage(String targetLanguage){
@@ -333,7 +335,7 @@ public class MyApp extends Application {
     public String getSavedLanguage(){
         String legacyResult = (String) readDataLegacy("language_settings", "app_language", new TypeToken<String>() {}.getType());
         String result = OperationsWithStorage.getUserLanguagePreference(context, currentAccountString, "app_language");
-        if(!legacyResult.equals("null")){
+        if(legacyResult != null){
             // move legacy data to new position
             Log.d(TAG, "getSavedLanguage: Legacy data detected!");
             saveLanguage(legacyResult);

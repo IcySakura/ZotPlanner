@@ -24,7 +24,8 @@ public class OperationsWithStorage {
     
     private final static String TAG = "OperationsWithStorage";
 
-    public static boolean saveCourseListData(Context context, String accountString, int currentProfile, String fileName, List<Course> courseList){
+    public static boolean saveCourseListData(Context context, String accountString,
+                                             int currentProfile, String fileName, List<Course> courseList){
         Gson gson = new Gson();
         String courseListGsonData = gson.toJson(courseList);
         return writeStringToDocumentsFolder(context, accountString + "/" + currentProfile, fileName, courseListGsonData);
@@ -140,9 +141,13 @@ public class OperationsWithStorage {
     private static boolean writeStringToDocumentsFolder(Context context, String path, String fileName, String data){
         boolean is_success = true;
         try {
+            Log.d(TAG, "writeStringToDocumentsFolder: Trying to create path: " + context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+                    + "/" + path);
             File dir = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
                     + "/" + path);
             dir.mkdirs();
+            Log.d(TAG, "writeStringToDocumentsFolder: Successfully created: " + context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
+                    + "/" + path);
             File tempFile = new File(context.getExternalFilesDir(Environment.DIRECTORY_DOCUMENTS)
                     + "/" + path, fileName); //this works
             OutputStreamWriter outputStreamWriter = new OutputStreamWriter(new FileOutputStream(tempFile));

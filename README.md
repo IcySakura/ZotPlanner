@@ -13,7 +13,15 @@ E-mail: lyx981mike@gmail.com
 
 Avaibable in Chinese, English, and Japanese.
 
-Latest Version: Beta v1.2.1 (Beta 2)
+Latest Version: Beta v1.2.1 (Beta 4)
+
+06/15/2019	Beta v1.2.1(Beta 4)
+-	Fixed a bug where a fresh installed app can crash in some Samsung Galaxy Phones (Like Galaxy S8+).
+-	Fixed a bug where the app might crash if you have selected more than one section in a course.
+
+06/14/2019	Beta v1.2.1(Beta 3)
+-	Fixed a bug where sometime classes are not updated correctly. (Thanks to a User’s feedback)
+-	In this version, the way of storing all data has been changed from invisible to visible, so you can control your class or settings data at any time you want in the app’s folder. This internal change will also make it possible for some cool functions to be added. Please look forward to our next release!
 
 05/16/2019	v1.2.1(Beta 2)
 -	Fixed a bug where UI is not refreshed normally in List View.

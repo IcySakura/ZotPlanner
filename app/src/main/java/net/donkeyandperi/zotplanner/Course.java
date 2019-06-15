@@ -4,10 +4,8 @@ import android.os.Build;
 import android.util.Log;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +13,7 @@ import java.util.List;
 public class Course {
     private static final String TAG = "Course";
     private String courseName;
-    HashMap<String, HashMap<String, String>> courseList = new HashMap<>();
+    private HashMap<String, HashMap<String, String>> singleCourseInfoList = new HashMap<>();
     private List<String> elementNameList =  CourseStaticData.presetElementNameList;
     List<String> courseCodeList = new ArrayList<>();
     private List<String> selectedCourseCodeList = new ArrayList<>();
@@ -70,27 +68,31 @@ public class Course {
 
     public void setUpNewSingleCourse(String courseNum)
     {
-        courseList.put(courseNum, new HashMap<String, String>());
+        Log.d(TAG, "setUpNewSingleCourse: setting up a new course: " + courseNum);
+        singleCourseInfoList.put(courseNum, new HashMap<String, String>());
         courseCodeList.add(courseNum);
         setUpSingleCourseElement(courseNum, elementNameList.get(0), courseNum);
     }
 
     public void setUpSingleCourseElement(String courseNum, String courseElement, String elementValue)
     {
-        courseList.get(courseNum).put(courseElement, elementValue);
+        singleCourseInfoList.get(courseNum).put(courseElement, elementValue);
     }
 
     public void replaceCourseElementHashMap(String courseCode, HashMap<String, String> hashMap){
-        courseList.remove(courseCode);
-        courseList.put(courseCode, hashMap);
+        singleCourseInfoList.remove(courseCode);
+        singleCourseInfoList.put(courseCode, hashMap);
     }
 
     public String getCourseElement(String courseNum, String courseElement)
     {
 //        Log.i("SizeOfCodeList", String.valueOf(courseCodeList.size()));
-//        Log.i("SizeOfList11 ", String.valueOf(courseList.size()));
-//        Log.i("SizeOfList22 ", String.valueOf(courseList.get(courseNum).size()));
-        return courseList.get(courseNum).get(courseElement);
+//        Log.i("SizeOfList11 ", String.valueOf(singleCourseInfoList.size()));
+//        Log.i("SizeOfList22 ", String.valueOf(singleCourseInfoList.get(courseNum).size()));
+        Log.d(TAG, "getCourseElement: Here is the CourseList: " + singleCourseInfoList);
+        Log.d(TAG, "getCourseElement: Do we have a course here for " + courseNum +
+                ": " + singleCourseInfoList.get(courseNum));
+        return singleCourseInfoList.get(courseNum).get(courseElement);
     }
 
     public String getCourseBasicInfo()
@@ -209,12 +211,12 @@ public class Course {
     }
 
     public HashMap<String, String> getSingleCourseHashMap(String courseCode){
-        return courseList.get(courseCode);
+        return singleCourseInfoList.get(courseCode);
     }
 
     public void setSingleCourseHashMap(String courseCode, HashMap<String, String> singleCourseHashMap){
-        courseList.get(courseCode).clear();
-        courseList.get(courseCode).putAll(singleCourseHashMap);
+        singleCourseInfoList.get(courseCode).clear();
+        singleCourseInfoList.get(courseCode).putAll(singleCourseHashMap);
     }
 
     public List<String> getCourseCodeList(){
@@ -222,7 +224,7 @@ public class Course {
     }
 
     public HashMap<String, String> getCourseCodeHashMap(String courseCode){
-        return courseList.get(courseCode);
+        return singleCourseInfoList.get(courseCode);
     }
 
     public void setIsSummer(boolean is){
@@ -370,7 +372,7 @@ public class Course {
     }
 
     public boolean isElementTBA(String courseCode, String elementTitle){
-        return courseList.get(courseCode).get(elementTitle).equals("TBA");
+        return singleCourseInfoList.get(courseCode).get(elementTitle).equals("TBA");
     }
 
     public boolean isExpandedOnSelectedCourseList() {
@@ -430,5 +432,18 @@ public class Course {
             }
         }
         return false;
+    }
+
+    public void updateSingleCourseInfoList(Course newCourse){
+        // This function is going to update the current course's singleCourseInfoList with the new_course's
+        // one. (If there is a match being found...)
+        HashMap<String, HashMap<String, String>> newCourseSingleCourseInfoList = newCourse.singleCourseInfoList;
+        for (String newCourseCourseNum: newCourseSingleCourseInfoList.keySet()){
+            if(singleCourseInfoList.containsKey(newCourseCourseNum)){
+                Log.d(TAG, "updateSingleCourseInfoList: Going to update singleCourseInfo for " + newCourseCourseNum);
+                newCourseSingleCourseInfoList.remove(newCourseCourseNum);
+                newCourseSingleCourseInfoList.put(newCourseCourseNum, newCourseSingleCourseInfoList.get(newCourseCourseNum));
+            }
+        }
     }
 }

@@ -90,7 +90,7 @@ public class OperationsWithCourse {
                     String[] tempSearchTerm = elementList.get(0).split("-");
 
                     courseList = parseHtmlForCourseList(document, searchOptionYearTerm, tempSearchTerm);
-                    //Log.i(TAG, "SendRequest: (Parsed length): " + courseList.size());
+                    //Log.i(TAG, "SendRequest: (Parsed length): " + singleCourseInfoList.size());
                     Gson gson = new Gson();
                     data.putBoolean("is_success", true);
                     data.putString("course_list", gson.toJson(courseList));

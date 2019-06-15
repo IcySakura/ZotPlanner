@@ -70,8 +70,8 @@ public class NotificationListAdapter extends RecyclerView.Adapter<NotificationLi
             @Override
             public void onClick(View v) {
                 SingleCourse singleCourse = mCourseList.get(holder.getAdapterPosition());
-                Log.i("SizeOfList ", String.valueOf(selectedCourse.courseList.size()));
-                Log.i("SizeOfList2 ", String.valueOf(selectedCourse.courseList.get(singleCourse.getCourseCode()).size()));
+                Log.i("SizeOfList ", String.valueOf(selectedCourse.singleCourseInfoList.size()));
+                Log.i("SizeOfList2 ", String.valueOf(selectedCourse.singleCourseInfoList.get(singleCourse.getCourseCode()).size()));
                 selectedCourse.addSelectedCourse(singleCourse.getCourseCode());
                 Toast.makeText(v.getContext(), "You have added class: " + singleCourse.getCourseName() + " : " + singleCourse.getCourseCode(), Toast.LENGTH_SHORT).show();
                 app.addCourseToSelectedCourseList(selectedCourse);
