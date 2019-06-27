@@ -65,7 +65,8 @@ public class MyApp extends Application {
 
     // Profile info
     private String currentAccountString = "default";
-    private int currentProfile = 0;
+    // Everytime we try to get current profile, we need to get it from the storage
+    //private int currentProfile = 0;
 
     public void setRegNormalPage(Document regNormalPage){
         this.regNormalPage = regNormalPage;
@@ -283,17 +284,17 @@ public class MyApp extends Application {
     public boolean saveSelectedCourseListData() {
         // The following first call is trying to save data to legacy part, which is already deprecated now
         //saveDataLegacy("course_related_data", "selected_course_list_data", selectedCourseList);
-        return OperationsWithStorage.saveCourseListData(context, currentAccountString, currentProfile,
+        return OperationsWithStorage.saveCourseListData(context, currentAccountString, getCurrentProfile(),
                 "selected_course_list_data", selectedCourseList);
     }
 
     @SuppressWarnings("unchecked")
     private void readSelectedCourseListData(){
-        // The falling first call to legacy read has been deprecated, will be deleted later...
+        // The following first call to legacy read has been deprecated, will be deleted later...
         List<Course> legacyCourseList = (List<Course>) readDataLegacy
                 ("course_related_data", "selected_course_list_data", new TypeToken<List<Course>>() {}.getType());
         List<Course> tempSelectedCourseList = OperationsWithStorage.getCourseListData(
-                context, currentAccountString, currentProfile, "selected_course_list_data");
+                context, currentAccountString, getCurrentProfile(), "selected_course_list_data");
         // Need to move courses from legacy storage to current one; and then delete the legacy storage
         if(legacyCourseList!= null && !legacyCourseList.isEmpty()){
             // Here it detects whether there is any legacy selected_course_List data left; if so, move it to current data and save it
@@ -846,5 +847,18 @@ public class MyApp extends Application {
 
     public void setCurrentlyProcessingSelectedListCalendarview(boolean currentlyProcessingSelectedListCalendarview) {
         isCurrentlyProcessingSelectedListCalendarview = currentlyProcessingSelectedListCalendarview;
+    }
+
+    public int getCurrentProfile(){
+        return OperationsWithStorage.getCurrentProfile(context, currentAccountString,
+                "current_user_profile");
+    }
+
+    public Boolean setCurrentProfileAndNotifyProfileChange(int newProfile){
+        if(getCurrentProfile() != newProfile){
+            setIsSelectedCourseListChanged(true);
+        }
+        return OperationsWithStorage.saveCurrentProfile(context, currentAccountString,
+                "current_user_profile", newProfile);
     }
 }

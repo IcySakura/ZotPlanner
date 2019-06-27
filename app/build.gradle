@@ -12,8 +12,8 @@ android {
         applicationId "net.donkeyandperi.zotplanner"
         minSdkVersion 21
         targetSdkVersion 28
-        versionCode 20
-        versionName "v1.2.1 (Beta 4)"
+        versionCode 21
+        versionName "v1.3.1 (Beta 1)"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {

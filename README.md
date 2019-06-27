@@ -13,7 +13,11 @@ E-mail: lyx981mike@gmail.com
 
 Avaibable in Chinese, English, and Japanese.
 
-Latest Version: Beta v1.2.1 (Beta 4)
+Latest Version: Beta v1.3.1 (Beta 1)
+
+06/27/2019	Beta v1.3.1(Beta 1)
+-	NEW: Now you can choose up to four profiles, which means you can have four different schedules for your next quarter. To use this function, simply open the Navigation Drawer by swiping right from the left side of screen in Main Page of the App and choose any one of the profiles from Profile 1 to Profile 4.
+-	FIX: Minor bugs fixed.
 
 06/15/2019	Beta v1.2.1(Beta 4)
 -	Fixed a bug where a fresh installed app can crash in some Samsung Galaxy Phones (Like Galaxy S8+).

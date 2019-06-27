@@ -106,4 +106,9 @@
     <string name="edit">Edit</string>
     <string name="comments">Comments: %1$s</string>
     <string name="error_refreshing_singleCourse">An error happened!</string>
+    <string name="current_user_profile">Profile %1$s</string>
+    <string name="profile_1">Profile 1</string>
+    <string name="profile_2">Profile 2</string>
+    <string name="profile_3">Profile 3</string>
+    <string name="profile_4">Profile 4</string>
 </resources>

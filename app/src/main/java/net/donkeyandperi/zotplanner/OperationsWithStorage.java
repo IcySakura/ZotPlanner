@@ -133,6 +133,21 @@ public class OperationsWithStorage {
         return resultOfKNM;
     }
 
+    public static boolean saveCurrentProfile(Context context, String accountString, String fileName, int currentProfile){
+        return writeStringToDocumentsFolder(context, accountString, fileName, String.valueOf(currentProfile));
+    }
+
+    public static int getCurrentProfile(Context context, String accountString, String fileName){
+        // Return 0 if there is no data found in the file
+        int resultOfCurrentProfile = 0;
+        String resultOfCurrentProfileStringData = tryReadStringFromFileInDocumentsFolder(context, accountString, fileName);
+        if(!resultOfCurrentProfileStringData.isEmpty()){
+            Gson gson = new Gson();
+            resultOfCurrentProfile = gson.fromJson(resultOfCurrentProfileStringData, new TypeToken<Integer>(){}.getType());
+        }
+        return resultOfCurrentProfile;
+    }
+
     private static String getGsonString(Object object){
         Gson gson = new Gson();
         return gson.toJson(object);

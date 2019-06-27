@@ -106,4 +106,9 @@
     <string name="edit">编辑</string>
     <string name="comments">注意事项: %1$s</string>
     <string name="error_refreshing_singleCourse">发生了错误！</string>
+    <string name="profile_1">档案 1</string>
+    <string name="profile_2">档案 2</string>
+    <string name="profile_3">档案 3</string>
+    <string name="profile_4">档案 4</string>
+    <string name="current_user_profile">档案 %1$s</string>
 </resources>

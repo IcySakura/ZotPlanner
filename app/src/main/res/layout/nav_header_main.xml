@@ -2,35 +2,36 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/nav_header_height"
-    android:background="@drawable/uci"
     android:gravity="bottom"
     android:orientation="vertical"
+    android:background="@drawable/uci"
     android:paddingBottom="@dimen/activity_vertical_margin"
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:contentDescription="@string/nav_header_desc"
-        android:paddingTop="@dimen/nav_header_vertical_spacing" />
-
-    <TextView
+    <RelativeLayout
+        android:background="#1F000000"
+        android:id="@+id/nav_header_main_popup_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingTop="@dimen/nav_header_vertical_spacing"
-        android:text="@string/nav_header_title"
-        android:textColor="@color/nav_drawer_title_color"
-        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+        android:foreground="@drawable/corners_bg"
+        android:padding="8dp">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@color/nav_drawer_title_color"
-        android:text="@string/nav_header_subtitle" />
+        <TextView
+            android:id="@+id/nav_header_main_popup_current_profile"
+            android:textColor="@color/common_google_signin_btn_text_dark_default"
+            android:textSize="20sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/baseline_expand_more_24"
+            android:layout_alignParentEnd="true" />
+
+    </RelativeLayout>
 
 </LinearLayout>

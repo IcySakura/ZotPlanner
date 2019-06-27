@@ -107,4 +107,9 @@
     <string name="edit">編集</string>
     <string name="comments">注意点: %1$s</string>
     <string name="error_refreshing_singleCourse">エラーが発生しました！</string>
+    <string name="profile_1">プロフィール 1</string>
+    <string name="profile_2">プロフィール 2</string>
+    <string name="profile_3">プロフィール 3</string>
+    <string name="profile_4">プロフィール 4</string>
+    <string name="current_user_profile">プロフィール %1$s</string>
 </resources>

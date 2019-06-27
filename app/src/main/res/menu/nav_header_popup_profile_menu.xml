@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/nav_header_popup_profile_menu_1"
+        android:title="@string/profile_1" />
+    <item android:id="@+id/nav_header_popup_profile_menu_2"
+        android:title="@string/profile_2" />
+    <item android:id="@+id/nav_header_popup_profile_menu_3"
+        android:title="@string/profile_3" />
+    <item android:id="@+id/nav_header_popup_profile_menu_4"
+        android:title="@string/profile_4" />
+</menu>

@@ -27,5 +27,7 @@
     <color name="selected_single_course_background">#e5e5e5</color>
     <color name="course_background">#ffffff</color>
     <color name="edit_button_color">#ffffff</color>
+    
+    <color name="half_transparent_black">#7F000000</color>
 
 </resources>

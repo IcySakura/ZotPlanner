@@ -38,7 +38,9 @@ import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.dx.dxloadingbutton.lib.LoadingButton;
@@ -90,6 +92,10 @@ public class MainActivity extends AppCompatActivity
     private boolean isFirstTimeRunning = true;
     private SubMenu subMenuOfGoTo;
 
+    //For nav header popup profile menu
+    RelativeLayout navHeaderPopupProfileMenu;
+    TextView navHeaderPopupProfileTextview;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,8 +130,66 @@ public class MainActivity extends AppCompatActivity
 
         setUpCalendarView();
 
+        setUpNavHeaderPopupProfileMenu();
+
         //overridePendingTransition(0, 0);
         //overridePendingTransition(R.anim.slide_in_left, R.anim.slide_in_left);
+    }
+
+    private void setUpNavHeaderPopupProfileMenu(){
+        View navHeaderView = navigationView.getHeaderView(0);
+        navHeaderPopupProfileMenu = (RelativeLayout) navHeaderView.findViewById(R.id.nav_header_main_popup_layout);
+        navHeaderPopupProfileTextview = (TextView) navHeaderView.findViewById(R.id.nav_header_main_popup_current_profile);
+        refreshNavHeaderPopupProfileRelatedViews();
+        navHeaderPopupProfileMenu.setOnClickListener(v -> {
+            PopupMenu popupMenu = new PopupMenu(context, v);
+            popupMenu.inflate(R.menu.nav_header_popup_profile_menu);
+            popupMenu.setOnMenuItemClickListener(item -> {
+                switch (item.getItemId()){
+                    case R.id.nav_header_popup_profile_menu_1:
+                        app.setCurrentProfileAndNotifyProfileChange(0);
+                        refreshNavHeaderPopupProfileRelatedViews();
+                        return true;
+                    case R.id.nav_header_popup_profile_menu_2:
+                        app.setCurrentProfileAndNotifyProfileChange(1);
+                        refreshNavHeaderPopupProfileRelatedViews();
+                        return true;
+                    case R.id.nav_header_popup_profile_menu_3:
+                        app.setCurrentProfileAndNotifyProfileChange(2);
+                        refreshNavHeaderPopupProfileRelatedViews();
+                        return true;
+                    case R.id.nav_header_popup_profile_menu_4:
+                        app.setCurrentProfileAndNotifyProfileChange(3);
+                        refreshNavHeaderPopupProfileRelatedViews();
+                        return true;
+                    default:
+                        return false;
+
+                }
+            });
+            popupMenu.show();
+        });
+    }
+
+    private void refreshNavHeaderPopupProfileRelatedViews(){
+        switch (app.getCurrentProfile()){
+            case 0:
+                navHeaderPopupProfileTextview.setText(R.string.profile_1);
+                break;
+            case 1:
+                navHeaderPopupProfileTextview.setText(R.string.profile_2);
+                break;
+            case 2:
+                navHeaderPopupProfileTextview.setText(R.string.profile_3);
+                break;
+            case 3:
+                navHeaderPopupProfileTextview.setText(R.string.profile_4);
+                break;
+            default:
+                navHeaderPopupProfileTextview.setText(R.string.profile_1);
+                break;
+        }
+        onResume();
     }
 
     private void setUpToolbar(Toolbar toolbar){
