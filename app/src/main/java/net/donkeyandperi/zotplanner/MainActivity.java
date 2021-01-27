@@ -354,7 +354,7 @@ public class MainActivity extends AppCompatActivity
 
     private void processRecyclerView() {
         List<Course> selectedCourseList = app.getSelectedCourseList();
-        Log.i("SelectedCourseListSize ", String.valueOf(selectedCourseList.size()));
+        Log.i(TAG, "processRecyclerView: SelectedCourseListSize " + String.valueOf(selectedCourseList.size()));
         if (!selectedCourseList.isEmpty()) {
             swipeRefreshLayout.setEnabled(true);
             if(app.isCourseListRefreshedBySplashActivity()){
@@ -504,6 +504,18 @@ public class MainActivity extends AppCompatActivity
                                         + " | " + courseCode);
                     }
                 }
+            }
+            int numberOfVisableDays = mWeekView.getNumberOfVisibleDays();
+            switch (numberOfVisableDays){
+                case 1:
+                    menu.findItem(R.id.week_view_action_day_view).setChecked(true);
+                    break;
+                case 3:
+                    menu.findItem(R.id.week_view_action_three_day_view).setChecked(true);
+                    break;
+                case 7:
+                    menu.findItem(R.id.week_view_action_week_view).setChecked(true);
+                    break;
             }
         }
         return super.onPrepareOptionsMenu(menu);
@@ -882,7 +894,7 @@ public class MainActivity extends AppCompatActivity
 
     private void processCalendarView() {
         List<Course> selectedCourseList = app.getSelectedCourseList();
-        //Log.i("SelectedCourseListSize ", String.valueOf(selectedCourseList.size()));
+        Log.i(TAG, "processCalendarView: SelectedCourseListSize: " + String.valueOf(selectedCourseList.size()));
         if (!selectedCourseList.isEmpty() && app.isSelectedCourseListChanged() && !app.isInProgressOfRefreshingSelectedCourseList()) {
             final List<OperationsWithCourse.SendRequest> threads = new ArrayList<>();
             for (final Course course : selectedCourseList) {
@@ -942,14 +954,15 @@ public class MainActivity extends AppCompatActivity
     }
 
     public void refreshSelectedCourseListForCalendarView(){
-        //Log.i("Notification ", "Going to refresh the dates");
+        Log.i(TAG, "refreshSelectedCourseListForCalendarView: Going to refresh the dates");
         if(app.isInProgressOfRefreshingSelectedCourseList()){
             new Thread(() -> {
                 //Log.i("refreshSelected ", "Oops, isInProgressOfRefreshingSelectedCourseList, waiting.......");
-                if(!app.isInProgressOfRefreshingSelectedCourseList()){
+                if (!app.isInProgressOfRefreshingSelectedCourseList()) {
                     refreshSelectedCourseListForCalendarView();
                 }
-            }).run();
+            }).start();
+            return;
         } else{
             final List<OperationsWithCourse.SendRequestForCalendar> threadsForCalendar = new ArrayList<>();
             for(final Course iCourse: app.getSelectedCourseList()){

@@ -197,7 +197,7 @@
                 android:text="@string/add_the_course"
                 android:layout_marginStart="10dp"
                 android:textSize="14sp"
-                android:textColor="@color/common_google_signin_btn_text_dark_focused"
+                android:textColor="@color/common_google_signin_btn_text_dark_default"
                 android:layout_gravity="center"/>
 
         </LinearLayout>

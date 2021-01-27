@@ -182,6 +182,7 @@ public class CourseDialogAdapter extends RecyclerView.Adapter<CourseDialogAdapte
 
         holder.addButton.setOnClickListener(v -> {
             SingleCourse singleCourse = mCourseList.get(holder.getAdapterPosition());
+            Log.d(TAG, "onCreateViewHolder: addButton has been clicked with courseCode: " + singleCourse.getCourseCode());
             if(app.checkIfSingleCourseInSelectedCourseList(singleCourse)){
                 app.removeSingleCourseFromSelectedCourseList(singleCourse);
                 holder.changeAddButtonImageAndText(R.drawable.round_add_circle_outline_black_36, R.string.add_the_course);

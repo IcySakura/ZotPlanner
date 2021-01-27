@@ -28,6 +28,7 @@ public class OperationsWithStorage {
                                              int currentProfile, String fileName, List<Course> courseList){
         Gson gson = new Gson();
         String courseListGsonData = gson.toJson(courseList);
+        Log.d(TAG, "saveCourseListData: going to call writeStringToDocumentsFolder...");
         return writeStringToDocumentsFolder(context, accountString + "/" + currentProfile, fileName, courseListGsonData);
     }
 
@@ -43,6 +44,7 @@ public class OperationsWithStorage {
     }
 
     public static boolean saveUserLanguagePreference(Context context, String accountString, String fileName, String languageData){
+        Log.d(TAG, "saveUserLanguagePreference: going to call writeStringToDocumentsFolder...");
         return writeStringToDocumentsFolder(context, accountString, fileName, getGsonString(languageData));
     }
 
@@ -59,6 +61,7 @@ public class OperationsWithStorage {
 
     public static boolean saveNotificationSingleCourseList(Context context, String accountString, String fileName,
                                                            List<SingleCourse> notificationSingleCourseList){
+        Log.d(TAG, "saveNotificationSingleCourseList: going to call writeStringToDocumentsFolder...");
         return writeStringToDocumentsFolder(context, accountString, fileName, getGsonString(notificationSingleCourseList));
     }
 
@@ -74,6 +77,7 @@ public class OperationsWithStorage {
     }
 
     public static boolean saveCheckingTimeInterval(Context context, String accountString, String fileName, int checkingInterval){
+        Log.d(TAG, "saveCheckingTimeInterval: going to call writeStringToDocumentsFolder...");
         return writeStringToDocumentsFolder(context, accountString, fileName, getGsonString(checkingInterval));
     }
 
@@ -89,6 +93,7 @@ public class OperationsWithStorage {
 
     public static boolean saveCachedInstructionBeginAndEndDates(Context context, String accountString,
                                                                 String fileName, HashMap<String, List<Date>> cachedInstructionBeginAndEndDates){
+        Log.d(TAG, "saveCachedInstructionBeginAndEndDates: going to call writeStringToDocumentsFolder...");
         return writeStringToDocumentsFolder(context, accountString, fileName, getGsonString(cachedInstructionBeginAndEndDates));
     }
 
@@ -104,6 +109,7 @@ public class OperationsWithStorage {
 
     public static boolean saveNotificationWhenStatus(Context context, String accountString,
                                                      String fileName, List<String> notificationWhenStatus){
+        Log.d(TAG, "saveNotificationWhenStatus: going to call writeStringToDocumentsFolder...");
         return writeStringToDocumentsFolder(context, accountString, fileName, getGsonString(notificationWhenStatus));
     }
 
@@ -119,6 +125,7 @@ public class OperationsWithStorage {
     }
 
     public static boolean saveKeepNotifyMe(Context context, String accountString, String fileName, boolean knm){
+        Log.d(TAG, "saveKeepNotifyMe: going to call writeStringToDocumentsFolder...");
         return writeStringToDocumentsFolder(context, accountString, fileName, getGsonString(knm));
     }
 
@@ -134,6 +141,7 @@ public class OperationsWithStorage {
     }
 
     public static boolean saveCurrentProfile(Context context, String accountString, String fileName, int currentProfile){
+        Log.d(TAG, "saveCurrentProfile: going to call writeStringToDocumentsFolder...");
         return writeStringToDocumentsFolder(context, accountString, fileName, String.valueOf(currentProfile));
     }
 

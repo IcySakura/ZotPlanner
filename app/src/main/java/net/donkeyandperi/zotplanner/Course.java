@@ -68,7 +68,7 @@ public class Course {
 
     public void setUpNewSingleCourse(String courseNum)
     {
-        Log.d(TAG, "setUpNewSingleCourse: setting up a new course: " + courseNum);
+        Log.v(TAG, "setUpNewSingleCourse: setting up a new course: " + courseNum);
         singleCourseInfoList.put(courseNum, new HashMap<String, String>());
         courseCodeList.add(courseNum);
         setUpSingleCourseElement(courseNum, elementNameList.get(0), courseNum);
@@ -89,8 +89,8 @@ public class Course {
 //        Log.i("SizeOfCodeList", String.valueOf(courseCodeList.size()));
 //        Log.i("SizeOfList11 ", String.valueOf(singleCourseInfoList.size()));
 //        Log.i("SizeOfList22 ", String.valueOf(singleCourseInfoList.get(courseNum).size()));
-        Log.d(TAG, "getCourseElement: Here is the CourseList: " + singleCourseInfoList);
-        Log.d(TAG, "getCourseElement: Do we have a course here for " + courseNum +
+        Log.v(TAG, "getCourseElement: Here is the CourseList: " + singleCourseInfoList);
+        Log.v(TAG, "getCourseElement: Do we have a course here for " + courseNum +
                 ": " + singleCourseInfoList.get(courseNum));
         return singleCourseInfoList.get(courseNum).get(courseElement);
     }

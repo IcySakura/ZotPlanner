@@ -30,4 +30,7 @@
     
     <color name="half_transparent_black">#7F000000</color>
 
+    <color name="common_google_signin_btn_text_dark_focused">#000000</color>
+    <color name="common_google_signin_btn_text_dark_default">#000000</color>
+
 </resources>

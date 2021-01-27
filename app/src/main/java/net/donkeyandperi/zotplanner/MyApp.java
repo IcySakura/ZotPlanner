@@ -21,10 +21,8 @@ import com.google.gson.reflect.TypeToken;
 import org.jsoup.nodes.Document;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -62,6 +60,7 @@ public class MyApp extends Application {
     private Boolean isCourseListRefreshedBySplashActivity = false;
     private Boolean isLanguageJustChanged = false;
     private int currentModeInMainActivity = 0;  // 0 means in List View; 1 means in Calendar View
+    private int isSelectedCourseListNeedToBeReadFromStorage = 1;  // Need to be set to 0 after a read from storage to avoid repeated read
 
     // Profile info
     private String currentAccountString = "default";
@@ -135,16 +134,16 @@ public class MyApp extends Application {
     public void addCourseToSelectedCourseList(Course course)
     {
         int checkValue = checkIfCourseInCourseList(selectedCourseList, course);
-        Log.i("Notification ", "The checkValue is: " + checkValue);
+        Log.d(TAG, "addCourseToSelectedCourseList: The checkValue is: " + checkValue);
         if(checkValue == -1)
         {
             isSelectedCourseListChanged = true;
-            Log.i("Notification ", "Changing isSelectedCourseListChanged to true.(addCourseToSelectedCourseList)");
+            Log.d(TAG, "addCourseToSelectedCourseList: Changing isSelectedCourseListChanged to true.(addCourseToSelectedCourseList)");
             selectedCourseList.add(course);
             saveSelectedCourseListData();
         } else if(selectedCourseList.get(checkValue).getSelectedCourseCodeList() != course.getSelectedCourseCodeList()){
             isSelectedCourseListChanged = true;
-            Log.i("Notification ", "Changing isSelectedCourseListChanged to true.(addCourseToSelectedCourseList) Reason: selectedCourseCodeList changed");
+            Log.d(TAG, "addCourseToSelectedCourseList: Changing isSelectedCourseListChanged to true.(addCourseToSelectedCourseList) Reason: selectedCourseCodeList changed");
             selectedCourseList.get(checkValue).setSelectedCourseCodeList(course.getSelectedCourseCodeList());
             saveSelectedCourseListData();
         }
@@ -163,7 +162,7 @@ public class MyApp extends Application {
         }
         if(isClassFound){
             isSelectedCourseListChanged = true;
-            Log.i(TAG, "updateCourseToSelectedCourseList: " +
+            Log.d(TAG, "updateCourseToSelectedCourseList: " +
                     "Changing isSelectedCourseListChanged to true.(updateCourseToSelectedCourseList)");
             Course old_course = selectedCourseList.get(indexOfCourse);
             old_course.updateSingleCourseInfoList(course);
@@ -172,7 +171,7 @@ public class MyApp extends Application {
 //            course.setExpandingOnSelectedCourseList(selectedCourseList.get(indexOfCourse).isExpandingOnSelectedCourseList());
             selectedCourseList.remove(indexOfCourse);
             selectedCourseList.add(indexOfCourse, old_course);
-            Log.i(TAG, "updateCourseToSelectedCourseList: is the new course expanded: "
+            Log.d(TAG, "updateCourseToSelectedCourseList: is the new course expanded: "
                     + course.isExpandedOnSelectedCourseList());
         }
         //selectedCourseList.add(course);   // if the add of index work, this line is useless
@@ -196,14 +195,17 @@ public class MyApp extends Application {
             old_course.setExpandingOnSelectedCourseList(course.isExpandingOnSelectedCourseList());
             selectedCourseList.remove(indexOfCourse);
             selectedCourseList.add(indexOfCourse, old_course);
-            Log.i(TAG, "updateCourseWithNewExpandedStateInSelectedCourseList: is the new course expanded: "
+            Log.d(TAG, "updateCourseWithNewExpandedStateInSelectedCourseList: is the new course expanded: "
                     + course.isExpandedOnSelectedCourseList());
         }
         saveSelectedCourseListData();
     }
 
     public List<Course> getSelectedCourseList() {
-        readSelectedCourseListData();
+        if(isSelectedCourseListNeedToBeReadFromStorage != 0){
+            readSelectedCourseListData();
+            isSelectedCourseListNeedToBeReadFromStorage = 0;
+        }
         return selectedCourseList;
     }
 
@@ -222,8 +224,8 @@ public class MyApp extends Application {
 
     public void removeSingleCourseFromSelectedCourseList(SingleCourse singleCourse){
         isSelectedCourseListChanged = true;
-        Log.i("Notification ", "Changing isSelectedCourseListChanged to true.(removeSingleCourseFromSelectedCourseList)");
-        Log.i("Notification ", "Before Remove (Count of all selectedSingleCourse): " + getSelectedSingleCourseCount());
+        Log.i(TAG, "removeSingleCourseFromSelectedCourseList: Changing isSelectedCourseListChanged to true.(removeSingleCourseFromSelectedCourseList)");
+        Log.i(TAG, "removeSingleCourseFromSelectedCourseList: Before Remove (Count of all selectedSingleCourse): " + getSelectedSingleCourseCount());
         for(int i = 0; i < selectedCourseList.size(); ++i){
             if(selectedCourseList.get(i).getSelectedCourseCodeList().contains(singleCourse.getCourseCode())){
                 selectedCourseList.get(i).removeSelectedCourse(singleCourse.getCourseCode());
@@ -233,7 +235,7 @@ public class MyApp extends Application {
             }
         }
         saveSelectedCourseListData();
-        Log.i("Notification ", "After Remove (Count of all selectedSingleCourse): " + getSelectedSingleCourseCount());
+        Log.i(TAG, "removeSingleCourseFromSelectedCourseList: After Remove (Count of all selectedSingleCourse): " + getSelectedSingleCourseCount());
     }
 
     public int getSelectedSingleCourseCount(){
@@ -273,11 +275,13 @@ public class MyApp extends Application {
     public void clearSelectedCourseListData() {
         isSelectedCourseListChanged = true;
         selectedCourseList.clear();
+        Log.d(TAG, "clearSelectedCourseListData: going to call saveSelectedCourseListData...");
         saveSelectedCourseListData();
     }
 
     public void addAllCoursesToSelectedCourseList(List<Course> pendingToBeAdded){
         selectedCourseList.addAll(pendingToBeAdded);
+        Log.d(TAG, "addAllCoursesToSelectedCourseList: going to call saveSelectedCourseListData...");
         saveSelectedCourseListData();
     }
 
@@ -386,7 +390,7 @@ public class MyApp extends Application {
 
     public void deleteCourseFromSelectedList(int position){
         isSelectedCourseListChanged = true;
-        Log.i("Notification ", "Changing isSelectedCourseListChanged to true.(deleteCourseFromSelectedList)");
+        Log.i(TAG, "deleteCourseFromSelectedList: Changing isSelectedCourseListChanged to true.(deleteCourseFromSelectedList)");
         selectedCourseList.remove(position);
         saveSelectedCourseListData();
     }
@@ -857,6 +861,7 @@ public class MyApp extends Application {
     public Boolean setCurrentProfileAndNotifyProfileChange(int newProfile){
         if(getCurrentProfile() != newProfile){
             setIsSelectedCourseListChanged(true);
+            isSelectedCourseListNeedToBeReadFromStorage = 1;
         }
         return OperationsWithStorage.saveCurrentProfile(context, currentAccountString,
                 "current_user_profile", newProfile);
