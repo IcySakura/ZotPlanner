@@ -17,6 +17,7 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.google.maps.GeoApiContext;
 
 import org.jsoup.nodes.Document;
 
@@ -51,6 +52,7 @@ public class MyApp extends Application {
     Context context = this;
     private int checkingInterval = 30;
     private boolean inProgressOfRefreshingSelectedCourseList = false;
+    private boolean inProgressOfRefreshingLocationInfo = false;
     private HashMap<String, List<Date>> cachedInstructionBeginAndEndDates = new HashMap<>();
     private List<String> notificationWhenStatus = new ArrayList<>();
     private boolean keepNotifyMeSwitch = false;
@@ -61,6 +63,7 @@ public class MyApp extends Application {
     private Boolean isLanguageJustChanged = false;
     private int currentModeInMainActivity = 0;  // 0 means in List View; 1 means in Calendar View
     private int isSelectedCourseListNeedToBeReadFromStorage = 1;  // Need to be set to 0 after a read from storage to avoid repeated read
+    private GeoApiContext geoApiContext;
 
     // Profile info
     private String currentAccountString = "default";
@@ -165,7 +168,7 @@ public class MyApp extends Application {
             Log.d(TAG, "updateCourseToSelectedCourseList: " +
                     "Changing isSelectedCourseListChanged to true.(updateCourseToSelectedCourseList)");
             Course old_course = selectedCourseList.get(indexOfCourse);
-            old_course.updateSingleCourseInfoList(course);
+            old_course.updateSingleCourseHashMap(course);
 //            course.setSelectedCourseCodeList(selectedCourseList.get(indexOfCourse).getSelectedCourseCodeList());
 //            course.setExpandedOnSelectedCourseList(selectedCourseList.get(indexOfCourse).isExpandedOnSelectedCourseList());
 //            course.setExpandingOnSelectedCourseList(selectedCourseList.get(indexOfCourse).isExpandingOnSelectedCourseList());
@@ -648,6 +651,14 @@ public class MyApp extends Application {
         return inProgressOfRefreshingSelectedCourseList;
     }
 
+    public void setInProgressOfRefreshingLocationInfo(boolean isInProgress){
+        inProgressOfRefreshingLocationInfo = isInProgress;
+    }
+
+    public boolean isInProgressOfRefreshingLocationInfo(){
+        return inProgressOfRefreshingLocationInfo;
+    }
+
     public void addCachedInstructionBeginAndEndDates(String searchOptionterm, List<Date> data){
         cachedInstructionBeginAndEndDates.put(searchOptionterm, data);
         saveCachedInstructionBeginAndEndDates();
@@ -865,5 +876,24 @@ public class MyApp extends Application {
         }
         return OperationsWithStorage.saveCurrentProfile(context, currentAccountString,
                 "current_user_profile", newProfile);
+    }
+
+    public SingleCourse getSingleCourseByCourseCode(String courseCode) {
+        // Try get SingleCourse from selectedCourseList, return null on no found
+        SingleCourse result = null;
+        for (Course course: selectedCourseList) {
+            result = course.getSingleCourse(courseCode);
+            if (result != null) {
+                break;
+            }
+        }
+        return result;
+    }
+
+    public GeoApiContext getGeoApiContext() {
+        if (geoApiContext == null) {
+            geoApiContext = new GeoApiContext().setApiKey(OperationsWithMap.GOOGLE_MAP_API_KEY);
+        }
+        return geoApiContext;
     }
 }

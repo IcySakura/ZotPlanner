@@ -11,12 +11,10 @@ import com.google.gson.Gson;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -26,7 +24,7 @@ public class OperationsWithCourse {
 
     private final static String TAG = "OperationsWithCourse";
 
-    public static Document getDocument(String url, List<String> elementList) {
+    public static Document getWebRegScheduleDocument(String url, List<String> elementList) {
         Document document = null;
         try {
 
@@ -79,7 +77,7 @@ public class OperationsWithCourse {
             for (failTime = 0; failTime < 10; ++failTime) {
                 try {
                     //Log.i("Elementlist ", elementList.toString());
-                    org.jsoup.nodes.Document document = getDocument("https://www.reg.uci.edu/perl/WebSoc", elementList);
+                    org.jsoup.nodes.Document document = getWebRegScheduleDocument("https://www.reg.uci.edu/perl/WebSoc", elementList);
                     //Log.i("Document ", document.toString());
                     /*
                     Log.i(TAG, "SendRequest: (Original): " + document.toString().substring(
@@ -226,7 +224,12 @@ public class OperationsWithCourse {
                         newCourse.setUpNewSingleCourse(currentCourseNum);
                         isAbleToContinue = false;
                     } else if (currentCourseNum != null) {
-                        //Log.d(TAG, "Setting up single course element(" + currentCourseNum + "): " + courseElementToBeAdded.get(subI) + " with " + subElementsTitle.get(subI).text());
+//                        Log.d(TAG, "Setting up single course element(" + currentCourseNum + "): " + courseElementToBeAdded.get(subI) + " with " + subElementsTitle.get(subI).text());
+//                        Log.d(TAG, "Let's first see if this is a place: " + courseElementToBeAdded.get(subI).equals("Place"));
+                        if(courseElementToBeAdded.get(subI).equals("Place")){
+//                            Log.d(TAG, "Let's see if this has link: " + subElementsTitle.get(subI).getElementsByTag("a").attr("href"));
+                            newCourse.setUpSingleCourseLocationLink(currentCourseNum, subElementsTitle.get(subI).getElementsByTag("a").attr("href"));
+                        }
                         newCourse.setUpSingleCourseElement(currentCourseNum, courseElementToBeAdded.get(subI), subElementsTitle.get(subI).text());
                         if(subI == courseElementLength - 1){
                             isAbleToContinue = true;
@@ -253,7 +256,7 @@ public class OperationsWithCourse {
         return sendRequest;
     }
 
-    public static Document getCalendarDocument(String url) {
+    public static Document getDocument(String url) {
         Document document = null;
         try {
             document = Jsoup.connect(url)
@@ -313,9 +316,9 @@ public class OperationsWithCourse {
                         url.append(year.substring(2, 4));
                     }
                     url.append(".html");
-                    Log.i("Notification ", "Url build complete, which is: " + url.toString());
+                    Log.i(TAG, "SendRequestForCalendar: Url build complete, which is: " + url.toString());
 
-                    org.jsoup.nodes.Document document = getCalendarDocument(url.toString());
+                    org.jsoup.nodes.Document document = getDocument(url.toString());
                     List<Date> instructionBeginAndEndDates = parseHtmlForBeginAndEndDate(document, academicYearTerm, isSummer, year);
                     if (instructionBeginAndEndDates.isEmpty()) {
                         throw new NullPointerException("Nothing is provided in instructionBeginAndEndDates");
@@ -390,7 +393,6 @@ public class OperationsWithCourse {
         }
         return result;
     }
-
 
     public static Integer getCourseStatusCorrespondingColor(String status, Context context){
         Log.d(TAG, "getCourseStatusCorrespondingColor: the status is: " + status);
@@ -485,4 +487,59 @@ public class OperationsWithCourse {
         return elementList;
     }
 
+    public static class SendRequestForCourseLocation extends Thread {
+        private Handler handler;
+        private boolean runningFlag = false;
+        final MyApp app;
+        private String url;
+
+        public SendRequestForCourseLocation(Handler handler, MyApp app, String url) {
+            this.handler = handler;
+            this.app = app;
+            this.url = url;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+            runningFlag = true;
+            int failTime = 0;
+            Message message = new Message();
+            Bundle data = new Bundle();
+            for (failTime = 0; failTime < 10; ++failTime) {
+                try {
+
+                    org.jsoup.nodes.Document document = getDocument(url.toString());
+                    String buildingName = parseHtmlForBuildingName(document);
+                    data.putBoolean("is_success", true);
+                    data.putString("building_name", buildingName);
+                    message.setData(data);
+                    Log.i(TAG, "SendRequestForCourseLocation: is_success: true");
+                    //app.updateCourseWithDate(iCourse.getCourseName(), instructionBeginAndEndDates);
+                    //app.addCachedInstructionBeginAndEndDates(iCourse.getSearchOptionYearTerm(), instructionBeginAndEndDates);
+                    break;
+                } catch (Exception e) {
+                    Log.i(TAG, "SendRequestForCourseLocation: Hey! We have some problems!");
+                    e.printStackTrace();
+                }
+            }
+            if (failTime == 10) {
+                data.putBoolean("is_success", false);
+            }
+            Log.i(TAG, "SendRequestForCourseLocation: Going to send message back to the handler.");
+            handler.sendMessage(message);
+            runningFlag = false;
+        }
+
+        public boolean getRunningFlag() {
+            return runningFlag;
+        }
+    }
+
+    private static String parseHtmlForBuildingName(Document document) {
+        Elements elements = document.select("span[class=fl-heading-text]");
+        String possibleBuildingName = elements.get(1).text();
+        Log.d(TAG, "parseHtmlForBuildingName: the possible building name we get is: " + possibleBuildingName);
+        return possibleBuildingName;
+    }
 }

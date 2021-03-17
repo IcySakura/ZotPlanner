@@ -2,10 +2,14 @@ package net.donkeyandperi.zotplanner;
 
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+
+import androidx.annotation.NonNull;
 
 public class SingleCourse {
     private static final String TAG = "SingleCourse";
@@ -19,6 +23,19 @@ public class SingleCourse {
     private boolean isFollowing = false;
     private boolean isExpanedInDialog = false;
     private String comments = "";
+    private String courseLocationWebsiteLink = null;
+    private String courseLocationBuildingName = null;
+    private Double courseLocationBuildingLat = 0.0;
+    private Double courseLocationBuildingLng = 0.0;
+
+    @NonNull
+    @Override
+    public String toString() {
+        if (courseName.equals("Not selected")) {
+            return courseName;
+        }
+        return "(" + getCourseElement("Type") + ") " + courseName;
+    }
 
     public void setCourseName(String courseName)
     {
@@ -126,6 +143,9 @@ public class SingleCourse {
     }
 
     public String getCourseCode(){
+        if (getCourseName().equals("Not selected")) {
+            return null;
+        }
         return elementList.get("Code");
     }
 
@@ -199,5 +219,33 @@ public class SingleCourse {
 
     public void setComments(String comments) {
         this.comments = comments;
+    }
+
+    public String getCourseLocationBuildingName() {
+        return courseLocationBuildingName;
+    }
+
+    public void setCourseLocationBuildingName(String courseLocationBuildingName) {
+        this.courseLocationBuildingName = courseLocationBuildingName;
+    }
+
+    public String getCourseLocationWebsiteLink() {
+        return courseLocationWebsiteLink;
+    }
+
+    public void setCourseLocationWebsiteLink(String courseLocationWebsiteLink) {
+        this.courseLocationWebsiteLink = courseLocationWebsiteLink;
+    }
+
+    public LatLng getCourseLocationBuildingLatLng() {
+        if (courseLocationBuildingLat == 0.0 && courseLocationBuildingLng == 0.0){
+            return null;
+        }
+        return new LatLng(courseLocationBuildingLat, courseLocationBuildingLng);
+    }
+
+    public void setCourseLocationBuildingLatLng(double lat, double lng) {
+        this.courseLocationBuildingLat = lat;
+        this.courseLocationBuildingLng = lng;
     }
 }

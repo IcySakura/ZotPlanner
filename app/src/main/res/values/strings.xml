@@ -9,6 +9,7 @@
     <string name="settings_about_copyright_information">All rights reserved by IcySakura</string>
     <string name="action_settings">Settings</string>
     <string name="clear_all_selected_courses">Clear All</string>
+    <string name="clear_all_map_marks">Clear All Marks</string>
     <string name="success_clear">Cleared!</string>
     <string name="empty_clear">Nothing to clear!</string>
     <string name="quarter_choose">Choose the Quarter here</string>
@@ -85,7 +86,7 @@
     <string name="nav_header_desc">List</string>
     <string name="list_view">List View</string>
     <string name="calendar_view">Calendar View</string>
-    <string name="home">MyEEE</string>
+    <string name="home">Zot Smart</string>
     <string name="settings">Settings</string>
     <string name="donate">Donate</string>
     <string name="others">Others</string>
@@ -111,4 +112,13 @@
     <string name="profile_2">Profile 2</string>
     <string name="profile_3">Profile 3</string>
     <string name="profile_4">Profile 4</string>
+    <string name="map_view_selection_of_course">Mark</string>
+    <string name="map_view_route_of_two_courses">Route</string>
+    <string name="map_view_bottom_sheet_first_course_spinner_title">Choose a course</string>
+    <string name="map_view_center">Center</string>
+    <string name="map_view_bottom_sheet_second_course_spinner_title">Choose a second course</string>
+    <string name="map_view_start_location">Start location: %1$s</string>
+    <string name="map_view_end_location">End location: %1$s</string>
+    <string name="map_view_distance">Distance: %1$s</string>
+    <string name="map_view_duration">Duration:</string>
 </resources>

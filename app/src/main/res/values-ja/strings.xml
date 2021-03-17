@@ -33,7 +33,7 @@
     <string name="empty_clear">消す内容がない！</string>
     <string name="ge_choose">教養科目（ＧＥ）カテゴリーを選ぶ</string>
     <string name="have_to_choose_at_least_two_or_more_options">少なくとも２つの選択肢を選んでください</string>
-    <string name="home">私のＥＥＥ</string>
+    <string name="home">Zot Smart</string>
     <string name="language_settings_dialog_label">言語設定</string>
     <string name="level_choose">課程レベルを選ぶ</string>
     <string name="list_view">リストで見る</string>
@@ -112,4 +112,14 @@
     <string name="profile_3">プロフィール 3</string>
     <string name="profile_4">プロフィール 4</string>
     <string name="current_user_profile">プロフィール %1$s</string>
+    <string name="clear_all_map_marks">地図マークを全て消す</string>
+    <string name="map_view_selection_of_course">マーク</string>
+    <string name="map_view_route_of_two_courses">線路</string>
+    <string name="map_view_bottom_sheet_first_course_spinner_title">授業を一つ選んでください</string>
+    <string name="map_view_center">センター</string>
+    <string name="map_view_bottom_sheet_second_course_spinner_title">もう一つの授業を選んでください</string>
+    <string name="map_view_start_location">出発点：%1$s</string>
+    <string name="map_view_end_location">目的地：%1$s</string>
+    <string name="map_view_distance">距離：%1$s</string>
+    <string name="map_view_duration">デュレイション ：</string>
 </resources>

@@ -13,7 +13,7 @@
             android:icon="@drawable/calendar"
             android:title="@string/calendar_view" />
         <item
-            android:id="@+id/my_eee"
+            android:id="@+id/map_view"
             android:icon="@drawable/uci"
             android:title="@string/home" />
     </group>

@@ -73,9 +73,29 @@
 
             </RelativeLayout>
 
+
+
         </LinearLayout>
 
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
+        android:id="@+id/selected_course_list_gmap_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/course_background"
+        android:animateLayoutChanges="true"
+        android:visibility="gone">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/selected_course_list_gmap"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:name="com.google.android.gms.maps.SupportMapFragment" />
+
+        <include layout="@layout/map_view_bottom_sheet"/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/selected_course_list_fab"

@@ -85,7 +85,7 @@
     <string name="nav_header_desc">列表</string>
     <string name="list_view">列表形式</string>
     <string name="calendar_view">日历形式</string>
-    <string name="home">我的EEE</string>
+    <string name="home">Zot Smart</string>
     <string name="settings">设置</string>
     <string name="donate">捐赠</string>
     <string name="others">其它</string>
@@ -111,4 +111,14 @@
     <string name="profile_3">档案 3</string>
     <string name="profile_4">档案 4</string>
     <string name="current_user_profile">档案 %1$s</string>
+    <string name="clear_all_map_marks">清楚所有地图标记</string>
+    <string name="map_view_selection_of_course">标记</string>
+    <string name="map_view_route_of_two_courses">路线</string>
+    <string name="map_view_bottom_sheet_first_course_spinner_title">选择一个课程</string>
+    <string name="map_view_center">中心</string>
+    <string name="map_view_bottom_sheet_second_course_spinner_title">选择另一个课程</string>
+    <string name="map_view_start_location">起点：%1$s</string>
+    <string name="map_view_end_location">终点：%1$s</string>
+    <string name="map_view_distance">距离：%1$s</string>
+    <string name="map_view_duration">耗时：</string>
 </resources>

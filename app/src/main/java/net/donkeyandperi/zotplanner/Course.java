@@ -3,6 +3,8 @@ package net.donkeyandperi.zotplanner;
 import android.os.Build;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -13,7 +15,7 @@ import java.util.List;
 public class Course {
     private static final String TAG = "Course";
     private String courseName;
-    private HashMap<String, HashMap<String, String>> singleCourseInfoList = new HashMap<>();
+    private HashMap<String, SingleCourse> singleCourseHashMap = new HashMap<>();
     private List<String> elementNameList =  CourseStaticData.presetElementNameList;
     List<String> courseCodeList = new ArrayList<>();
     private List<String> selectedCourseCodeList = new ArrayList<>();
@@ -69,30 +71,38 @@ public class Course {
     public void setUpNewSingleCourse(String courseNum)
     {
         Log.v(TAG, "setUpNewSingleCourse: setting up a new course: " + courseNum);
-        singleCourseInfoList.put(courseNum, new HashMap<String, String>());
+
         courseCodeList.add(courseNum);
+
+        singleCourseHashMap.put(courseNum, new SingleCourse());
         setUpSingleCourseElement(courseNum, elementNameList.get(0), courseNum);
+        singleCourseHashMap.get(courseNum).setCourseName(courseName);
     }
 
     public void setUpSingleCourseElement(String courseNum, String courseElement, String elementValue)
     {
-        singleCourseInfoList.get(courseNum).put(courseElement, elementValue);
+        singleCourseHashMap.get(courseNum).setUpCourseElement(courseElement, elementValue);
     }
 
-    public void replaceCourseElementHashMap(String courseCode, HashMap<String, String> hashMap){
-        singleCourseInfoList.remove(courseCode);
-        singleCourseInfoList.put(courseCode, hashMap);
+    public void setUpSingleCourseLocationLink(String courseNum, String locationLink)
+    {
+        singleCourseHashMap.get(courseNum).setCourseLocationWebsiteLink(locationLink);
+    }
+
+    public void setUpSingleCourseLocationBuildingName(String courseNum, String buildingName){
+        singleCourseHashMap.get(courseNum).setCourseLocationBuildingName(buildingName);
+    }
+
+    public String getSingleCourseLocationBuildingName(String courseNum){
+        return singleCourseHashMap.get(courseNum).getCourseLocationBuildingName();
     }
 
     public String getCourseElement(String courseNum, String courseElement)
     {
-//        Log.i("SizeOfCodeList", String.valueOf(courseCodeList.size()));
-//        Log.i("SizeOfList11 ", String.valueOf(singleCourseInfoList.size()));
-//        Log.i("SizeOfList22 ", String.valueOf(singleCourseInfoList.get(courseNum).size()));
-        Log.v(TAG, "getCourseElement: Here is the CourseList: " + singleCourseInfoList);
-        Log.v(TAG, "getCourseElement: Do we have a course here for " + courseNum +
-                ": " + singleCourseInfoList.get(courseNum));
-        return singleCourseInfoList.get(courseNum).get(courseElement);
+//        Log.v(TAG, "getCourseElement: Here is the CourseList: " + singleCourseHashMap);
+//        Log.v(TAG, "getCourseElement: Do we have a course here for " + courseNum +
+//                ": " + singleCourseHashMap.get(courseNum));
+        return singleCourseHashMap.get(courseNum).getCourseElement(courseElement);
     }
 
     public String getCourseBasicInfo()
@@ -154,26 +164,11 @@ public class Course {
     }
 
     public SingleCourse getSingleCourse(String courseCode){
-        SingleCourse singleCourse = new SingleCourse();
-        singleCourse.setSearchOptionYearTerm(searchOptionYearTerm);
-        singleCourse.setCourseName(courseName);
-        singleCourse.setIsSummer(isSummer);
-        singleCourse.setCourseQuarterBeginDate(courseQuarterBeginDate);
-        singleCourse.setCourseQuarterEndDate(courseQuarterEndDate);
-        /*
-        Log.d(TAG, "getSingleCourse: setting up singleCourse (" + courseCode + ")" +
-                "with elementNameList: " + elementNameList);
-                */
-        for(String elementName: elementNameList)
-        {
-            /*
-            Log.d(TAG, "getSingleCourse: setting up " +
-                    elementName + " with " + getCourseElement(courseCode, elementName));
-                    */
-            singleCourse.setUpCourseElement(elementName, getCourseElement(courseCode, elementName));
+        // Return null on no found
+        if (!singleCourseHashMap.containsKey(courseCode)) {
+            return null;
         }
-        singleCourse.setComments(getCommentsForSingleCourse(courseCode));
-        return singleCourse;
+        return singleCourseHashMap.get(courseCode);
     }
 
     public void setSearchOptionYearTerm(String searchOptionYearTerm) {
@@ -210,21 +205,8 @@ public class Course {
         return sb.toString();
     }
 
-    public HashMap<String, String> getSingleCourseHashMap(String courseCode){
-        return singleCourseInfoList.get(courseCode);
-    }
-
-    public void setSingleCourseHashMap(String courseCode, HashMap<String, String> singleCourseHashMap){
-        singleCourseInfoList.get(courseCode).clear();
-        singleCourseInfoList.get(courseCode).putAll(singleCourseHashMap);
-    }
-
     public List<String> getCourseCodeList(){
         return courseCodeList;
-    }
-
-    public HashMap<String, String> getCourseCodeHashMap(String courseCode){
-        return singleCourseInfoList.get(courseCode);
     }
 
     public void setIsSummer(boolean is){
@@ -372,7 +354,7 @@ public class Course {
     }
 
     public boolean isElementTBA(String courseCode, String elementTitle){
-        return singleCourseInfoList.get(courseCode).get(elementTitle).equals("TBA");
+        return singleCourseHashMap.get(courseCode).getCourseElement(elementTitle).equals("TBA");
     }
 
     public boolean isExpandedOnSelectedCourseList() {
@@ -434,15 +416,23 @@ public class Course {
         return false;
     }
 
-    public void updateSingleCourseInfoList(Course newCourse){
-        // This function is going to update the current course's singleCourseInfoList with the new_course's
+    public void updateSingleCourseHashMap(Course newCourse){
+        // This function is going to update the current course's singleCourseHashMap with the new_course's
         // one. (If there is a match being found...)
-        HashMap<String, HashMap<String, String>> newCourseSingleCourseInfoList = newCourse.singleCourseInfoList;
-        for (String newCourseCourseNum: newCourseSingleCourseInfoList.keySet()){
-            if(singleCourseInfoList.containsKey(newCourseCourseNum)){
-                Log.d(TAG, "updateSingleCourseInfoList: Going to update singleCourseInfo for " + newCourseCourseNum);
-                newCourseSingleCourseInfoList.remove(newCourseCourseNum);
-                newCourseSingleCourseInfoList.put(newCourseCourseNum, newCourseSingleCourseInfoList.get(newCourseCourseNum));
+        // TO-DO: Try preserve locationBuildingInfo if link is not changed... (however, the case where locationBuilingInfo is being updated should also be considered)
+        HashMap<String, SingleCourse> newCourseSingleCourseHashMap = newCourse.singleCourseHashMap;
+        for (String newCourseCourseNum: newCourseSingleCourseHashMap.keySet()){
+            if(singleCourseHashMap.containsKey(newCourseCourseNum)){
+//                Log.d(TAG, "updateSingleCourseHashMap: Going to update singleCourseInfo for " + newCourseCourseNum);
+                if(singleCourseHashMap.get(newCourseCourseNum).getCourseLocationWebsiteLink().equals(newCourseSingleCourseHashMap.get(newCourseCourseNum).getCourseLocationWebsiteLink())){
+                    newCourseSingleCourseHashMap.get(newCourseCourseNum).setCourseLocationBuildingName(singleCourseHashMap.get(newCourseCourseNum).getCourseLocationBuildingName());
+                    LatLng latLng = singleCourseHashMap.get(newCourseCourseNum).getCourseLocationBuildingLatLng();
+                    if (latLng != null) {
+                        newCourseSingleCourseHashMap.get(newCourseCourseNum).setCourseLocationBuildingLatLng(latLng.latitude, latLng.longitude);
+                    }
+                }
+                singleCourseHashMap.remove(newCourseCourseNum);
+                singleCourseHashMap.put(newCourseCourseNum, newCourseSingleCourseHashMap.get(newCourseCourseNum));
             }
         }
     }

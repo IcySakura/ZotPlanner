@@ -11,45 +11,54 @@ import android.graphics.drawable.GradientDrawable;
 import android.graphics.drawable.LayerDrawable;
 import android.os.Bundle;
 import android.os.Handler;
-
-import com.alamkanak.weekview.DateTimeInterpreter;
-import com.alamkanak.weekview.MonthLoader;
-import com.alamkanak.weekview.WeekView;
-import com.alamkanak.weekview.WeekViewDisplayable;
-import com.alamkanak.weekview.WeekViewEvent;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
-import androidx.recyclerview.widget.SimpleItemAnimator;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.os.Looper;
 import android.util.Log;
 import android.util.TypedValue;
-import android.view.SubMenu;
-import android.view.View;
-import com.google.android.material.navigation.NavigationView;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.appcompat.app.ActionBarDrawerToggle;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.SubMenu;
+import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.alamkanak.weekview.DateTimeInterpreter;
+import com.alamkanak.weekview.MonthLoader;
+import com.alamkanak.weekview.WeekView;
+import com.alamkanak.weekview.WeekViewDisplayable;
+import com.alamkanak.weekview.WeekViewEvent;
 import com.dx.dxloadingbutton.lib.LoadingButton;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.material.bottomsheet.BottomSheetBehavior;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.google.maps.DirectionsApi;
+import com.google.maps.DirectionsApiRequest;
+import com.google.maps.GeoApiContext;
+import com.google.maps.model.DirectionsLeg;
+import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.DirectionsStep;
+import com.google.maps.model.EncodedPolyline;
+import com.google.maps.model.TravelMode;
 import com.yanzhenjie.recyclerview.OnItemMenuClickListener;
 import com.yanzhenjie.recyclerview.SwipeMenuCreator;
 import com.yanzhenjie.recyclerview.SwipeMenuItem;
 import com.yanzhenjie.recyclerview.SwipeRecyclerView;
+
+import org.angmarch.views.NiceSpinner;
+import org.angmarch.views.OnSpinnerItemSelectedListener;
+import org.w3c.dom.Text;
 
 import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
@@ -60,10 +69,23 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.SimpleItemAnimator;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
         WeekView.EventClickListener, MonthLoader.MonthChangeListener,
-        WeekView.EventLongPressListener, WeekView.EmptyViewLongPressListener{
+        WeekView.EventLongPressListener, WeekView.EmptyViewLongPressListener,
+        OnMapReadyCallback {
 
     private static final String TAG = "MainActivity";
     private Intent intent;
@@ -80,6 +102,7 @@ public class MainActivity extends AppCompatActivity
 
     private Toolbar toolbar_list_view;
     private Toolbar toolbar_calendar_view;
+    private Toolbar toolbar_map_view;
 
     // Following variables are for calendar view
     private RelativeLayout calendarViewLayout;
@@ -89,12 +112,27 @@ public class MainActivity extends AppCompatActivity
     private int mWeekViewType = TYPE_THREE_DAY_VIEW;
     private WeekView mWeekView;
     private static Handler handler;
-    private boolean isFirstTimeRunning = true;
+    private boolean isFirstTimeRunningCalendarView = true;
     private SubMenu subMenuOfGoTo;
 
     //For nav header popup profile menu
     RelativeLayout navHeaderPopupProfileMenu;
     TextView navHeaderPopupProfileTextview;
+
+    // For Map view
+    private CoordinatorLayout selected_course_list_gmap_view;
+    private SupportMapFragment gmapFragment;
+    private GoogleMap gMap;
+    private BottomSheetBehavior<ConstraintLayout> mapViewBottomSheetBehavior;
+    private NiceSpinner mapViewFirstCourseSpinner;
+    private String mapViewSelectedFirstCourseCode;
+    private NiceSpinner mapViewSecondCourseSpinner;
+    private String mapViewSelectedSecondCourseCode;
+    private ConstraintLayout mapViewInfoLayout;
+    private TextView mapViewStartLocationTextView;
+    private TextView mapViewEndLocationTextView;
+    private TextView mapViewDistanceTextView;
+    private TextView mapViewDurationTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +148,18 @@ public class MainActivity extends AppCompatActivity
         recyclerView = (SwipeRecyclerView) findViewById(R.id.selected_course_list_recycler_view);
         welcomeScreen = (LinearLayout) findViewById(R.id.welcome_screen_linearlayout);
         swipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.selected_course_list_refresh_layout);
+        selected_course_list_gmap_view = (CoordinatorLayout) findViewById(R.id.selected_course_list_gmap_view);
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+        gmapFragment = (SupportMapFragment) getSupportFragmentManager()
+                .findFragmentById(R.id.selected_course_list_gmap);
+        gmapFragment.getMapAsync(this);
+        mapViewFirstCourseSpinner = (NiceSpinner) findViewById(R.id.map_view_bottom_sheet_first_course_spinner);
+        mapViewSecondCourseSpinner = (NiceSpinner) findViewById(R.id.map_view_bottom_sheet_second_course_spinner);
+        mapViewInfoLayout = (ConstraintLayout) findViewById(R.id.map_view_bottom_sheet_info_layout);
+        mapViewStartLocationTextView = (TextView) findViewById(R.id.map_view_bottom_sheet_start_location_textView);
+        mapViewEndLocationTextView = (TextView) findViewById(R.id.map_view_bottom_sheet_end_location_textView);
+        mapViewDistanceTextView = (TextView) findViewById(R.id.map_view_bottom_sheet_distance_textView);
+        mapViewDurationTextView = (TextView) findViewById(R.id.map_view_bottom_sheet_duration_value_textView);
 
         setUpFloatingButton();
         setUpWelcomeScreen();
@@ -120,6 +170,7 @@ public class MainActivity extends AppCompatActivity
 
         toolbar_list_view = (Toolbar) findViewById(R.id.toolbar_list_view);
         toolbar_calendar_view = (Toolbar) findViewById(R.id.toolbar_calendar_view);
+        toolbar_map_view = (Toolbar) findViewById(R.id.toolbar_map_view);
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
@@ -132,8 +183,25 @@ public class MainActivity extends AppCompatActivity
 
         setUpNavHeaderPopupProfileMenu();
 
+        setUpMapView();
+
         //overridePendingTransition(0, 0);
         //overridePendingTransition(R.anim.slide_in_left, R.anim.slide_in_left);
+    }
+
+    private void setUpMapView() {
+        mapViewBottomSheetBehavior = BottomSheetBehavior.from(findViewById(R.id.map_view_bottom_sheet_layout));
+        mapViewBottomSheetBehavior.addBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+//                Log.d(TAG, "setUpMapView: bottomsheet's state has changed...");
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+//                Log.d(TAG, "setUpMapView: bottomsheet has been slided...");
+            }
+        });
     }
 
     private void setUpNavHeaderPopupProfileMenu(){
@@ -252,8 +320,10 @@ public class MainActivity extends AppCompatActivity
             //pendingIntent = new Intent(MainActivity.this, Abandoned_SelectedCourseListCalendarView.class);
             app.setCurrentModeInMainActivity(1);
             onResume();
-        } else if (id == R.id.my_eee) {
-            Toast.makeText(MainActivity.this, getString(R.string.under_development_message), Toast.LENGTH_SHORT).show();
+        } else if (id == R.id.map_view) {
+            app.setCurrentModeInMainActivity(2);
+            onResume();
+//            Toast.makeText(MainActivity.this, getString(R.string.under_development_message), Toast.LENGTH_SHORT).show();
         } else if (id == R.id.main_settings) {
             pendingIntent = new Intent(MainActivity.this, MainSettings.class);
         } else if (id == R.id.donate) {
@@ -294,11 +364,19 @@ public class MainActivity extends AppCompatActivity
             setUpToolbar(toolbar_list_view);
             toolbar_list_view.setVisibility(View.VISIBLE);
             toolbar_calendar_view.setVisibility(View.GONE);
-        } else {
+            toolbar_map_view.setVisibility(View.GONE);
+        } else if (app.getCurrentModeInMainActivity() == 1) {
             Log.d(TAG, "onResume: Setting up toolbar as calendar view");
             setUpToolbar(toolbar_calendar_view);
             toolbar_list_view.setVisibility(View.GONE);
             toolbar_calendar_view.setVisibility(View.VISIBLE);
+            toolbar_map_view.setVisibility(View.GONE);
+        } else if (app.getCurrentModeInMainActivity() == 2) {
+            Log.d(TAG, "onResume: Setting up toolbar as map view");
+            setUpToolbar(toolbar_map_view);
+            toolbar_list_view.setVisibility(View.GONE);
+            toolbar_calendar_view.setVisibility(View.GONE);
+            toolbar_map_view.setVisibility(View.VISIBLE);
         }
 
         // Setting up which view should be visible
@@ -306,15 +384,23 @@ public class MainActivity extends AppCompatActivity
             calendarViewLayout.setVisibility(View.GONE);
             welcomeScreen.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
-        } else {
+            selected_course_list_gmap_view.setVisibility(View.GONE);
+        } else if (app.getCurrentModeInMainActivity() == 1) {
             calendarViewLayout.setVisibility(View.VISIBLE);
             welcomeScreen.setVisibility(View.GONE);
             recyclerView.setVisibility(View.GONE);
+            selected_course_list_gmap_view.setVisibility(View.GONE);
+        } else if (app.getCurrentModeInMainActivity() == 2) {
+            calendarViewLayout.setVisibility(View.GONE);
+            welcomeScreen.setVisibility(View.GONE);
+            recyclerView.setVisibility(View.GONE);
+            selected_course_list_gmap_view.setVisibility(View.VISIBLE);
         }
 
-        // Setting up different views
+            // Setting up different views
         if(app.getCurrentModeInMainActivity() == 0){
             Log.i(TAG, "onResume(0): going to set visibility to gone and visible.");
+            fab.setVisibility(View.VISIBLE);
             welcomeScreen.setVisibility(View.GONE);
             recyclerView.setVisibility(View.VISIBLE);
 
@@ -329,7 +415,8 @@ public class MainActivity extends AppCompatActivity
             Log.i("FinalIsListChanged ", String.valueOf(app.isSelectedCourseListChanged()));
             processRecyclerView();
             Log.i("FinalSelectedListSize ", String.valueOf(app.getSelectedCourseList().size()));
-        } else {
+        } else if (app.getCurrentModeInMainActivity() == 1) {
+            fab.setVisibility(View.VISIBLE);
             Menu menu = (Menu) findViewById(R.id.week_view_menu);
             if(app.getLastCheckedItemInNavView() != null){
                 navigationView.setCheckedItem(app.getLastCheckedItemInNavView());
@@ -338,7 +425,7 @@ public class MainActivity extends AppCompatActivity
             }
             Log.i("onResume ", "Going to run processCalendarView");
             processCalendarView();
-            if (!isFirstTimeRunning){
+            if (!isFirstTimeRunningCalendarView){
                 onCreateOptionsMenu(menu);
                 if(app.isSelectedCourseListChanged()){
                     mWeekView.notifyDatasetChanged();
@@ -346,10 +433,247 @@ public class MainActivity extends AppCompatActivity
             } else {
                 mWeekView.goToHour(8);
             }
+        } else if (app.getCurrentModeInMainActivity() == 2) {
+            fab.setVisibility(View.GONE);
+            refreshSelectedCourseListWithLocationInfo(false);
+            centerMapViewAtUCI();
+            if (!app.getSelectedCourseList().isEmpty()) {
+                new Thread(() -> {
+                    while (true){
+                        if(!app.isInProgressOfRefreshingLocationInfo() && !app.isInProgressOfRefreshingSelectedCourseList()){
+                            runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+    //                                for(Course iCourse: app.getSelectedCourseList()){
+    //                                    for(String selectedCourseCode: iCourse.getSelectedCourseCodeList()){
+    //                                        SingleCourse singleCourse = iCourse.getSingleCourse(selectedCourseCode);
+    //                                        LatLng singleCourseLatLng = singleCourse.getCourseLocationBuildingLatLng();
+    //                                        if(singleCourseLatLng != null){
+    //                                            gMap.addMarker(new MarkerOptions().position(singleCourseLatLng).title(singleCourse.toString()));
+    //                                        }
+    //                                    }
+    //                                }
+                                    refreshMapViewSpinners();
+                                    if(mapViewSelectedFirstCourseCode == null || mapViewSelectedFirstCourseCode.isEmpty()){
+                                        mapViewSelectedFirstCourseCode = ((SingleCourse) mapViewFirstCourseSpinner.getItemAtPosition(0)).getCourseCode();
+                                    }
+                                    refreshMapViewGmapWithSelectedOptions();
+                                }
+                            });
+                            break;
+                        }
+                    }
+                }).start();
+            }
         }
 
         Log.d(TAG, "onResume: the time for onResume to run is(millsec): " + (System.currentTimeMillis() - timeStampForStartOfOnResume));
 
+    }
+
+    private void centerMapViewAtUCI() {
+        // Make sure map view is set up
+        if (gMap!= null && app.getCurrentModeInMainActivity() == 2) {
+            LatLng uci = new LatLng(33.645911933027556, -117.84279381157397);
+            gMap.moveCamera(CameraUpdateFactory.newLatLng(uci));
+            gMap.moveCamera(CameraUpdateFactory.zoomTo(15));
+        }
+    }
+
+    private void refreshMapViewGmapWithSelectedOptions() {
+        // This function will automatically refresh map according to the current selected courses...
+        if (gMap != null && mapViewSelectedFirstCourseCode != null && !mapViewSelectedFirstCourseCode.isEmpty()) {
+            gMap.clear();
+            SingleCourse selectedFirstSingleCourse = app.getSingleCourseByCourseCode(mapViewSelectedFirstCourseCode);
+            Log.d(TAG, "refreshMapViewGmapWithSelectedOptions: for courseCode: " + mapViewSelectedFirstCourseCode + ", the buildingName is: " + selectedFirstSingleCourse.getCourseLocationBuildingName() + " with latlng: " + selectedFirstSingleCourse.getCourseLocationBuildingLatLng());
+            gMap.addMarker(new MarkerOptions().position(selectedFirstSingleCourse.getCourseLocationBuildingLatLng()).title(selectedFirstSingleCourse.toString()));
+
+            if (mapViewSelectedSecondCourseCode != null && !mapViewSelectedSecondCourseCode.isEmpty()) {
+                SingleCourse selectedSecondSingleCourse = app.getSingleCourseByCourseCode(mapViewSelectedSecondCourseCode);
+                Log.d(TAG, "refreshMapViewGmapWithSelectedOptions: for courseCode: " + mapViewSelectedSecondCourseCode + ", the buildingName is: " + selectedSecondSingleCourse.getCourseLocationBuildingName() + " with latlng: " + selectedSecondSingleCourse.getCourseLocationBuildingLatLng());
+                gMap.addMarker(new MarkerOptions().position(selectedSecondSingleCourse.getCourseLocationBuildingLatLng()).title(selectedSecondSingleCourse.toString()));
+                drawRouteBetweenTwoPositionsOnGmap(selectedFirstSingleCourse.getCourseLocationBuildingLatLng(), selectedSecondSingleCourse.getCourseLocationBuildingLatLng());
+                mapViewInfoLayout.setVisibility(View.VISIBLE);
+                updateMapViewInfoStartAndEndLocations(selectedFirstSingleCourse.getCourseLocationBuildingName(), selectedSecondSingleCourse.getCourseLocationBuildingName());
+                return;
+            }
+        }
+
+        mapViewInfoLayout.setVisibility(View.GONE);
+    }
+
+    private void updateMapViewInfoDistanceAndDuration (String distance, String duration, long durationInSeconds) {
+        mapViewDistanceTextView.setText(getString(R.string.map_view_distance, distance));
+        mapViewDurationTextView.setText(duration);
+        if (durationInSeconds < 300) {
+            mapViewDurationTextView.setTextColor(Color.GREEN);
+        } else if (durationInSeconds < 480) {
+            mapViewDurationTextView.setTextColor(Color.YELLOW);
+        } else {
+            mapViewDurationTextView.setTextColor(Color.RED);
+        }
+    }
+
+    private void updateMapViewInfoStartAndEndLocations (String startLocationName, String endLocationName) {
+        mapViewStartLocationTextView.setText(getString(R.string.map_view_start_location, startLocationName));
+        mapViewEndLocationTextView.setText(getString(R.string.map_view_end_location, endLocationName));
+    }
+
+    private void drawRouteBetweenTwoPositionsOnGmap(LatLng position1, LatLng position2) {
+        // Credit to: https://stackoverflow.com/questions/47492459/how-do-i-draw-a-route-along-an-existing-road-between-two-points
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                List<LatLng> path = new ArrayList();
+                DirectionsLeg firstDirectionsLeg = null;
+                GeoApiContext geoApiContext = app.getGeoApiContext();
+//                Log.d(TAG, "drawRouteBetweenTwoPositionsOnGmap: going to request route between: " + position1.toString() + " and " + position2.toString());
+                DirectionsApiRequest req = DirectionsApi.getDirections(geoApiContext, position1.latitude + "," + position1.longitude, position2.latitude + "," + position2.longitude);
+                req.mode(TravelMode.WALKING);
+                try {
+                    DirectionsRoute[] routes = req.await();
+
+                    //Loop through legs and steps to get encoded polylines of each step
+                    if (routes != null && routes.length > 0) {
+                        DirectionsRoute route = routes[0];
+
+                        Log.d(TAG, "drawRouteBetweenTwoPositionsOnGmap: route num of legs: " + route.legs.length + " route duration: " + route.legs[0].duration);
+
+                        if (route.legs !=null) {
+                            if (route.legs.length > 0) {
+                                firstDirectionsLeg = route.legs[0];
+                            }
+                            for(int i=0; i<route.legs.length; i++) {
+                                DirectionsLeg leg = route.legs[i];
+                                if (leg.steps != null) {
+                                    for (int j=0; j<leg.steps.length;j++){
+                                        DirectionsStep step = leg.steps[j];
+                                        if (step.steps != null && step.steps.length >0) {
+                                            for (int k=0; k<step.steps.length;k++){
+                                                DirectionsStep step1 = step.steps[k];
+                                                EncodedPolyline points1 = step1.polyline;
+                                                if (points1 != null) {
+                                                    //Decode polyline and add points to list of route coordinates
+                                                    List<com.google.maps.model.LatLng> coords1 = points1.decodePath();
+                                                    for (com.google.maps.model.LatLng coord1 : coords1) {
+                                                        path.add(new LatLng(coord1.lat, coord1.lng));
+                                                    }
+                                                }
+                                            }
+                                        } else {
+                                            EncodedPolyline points = step.polyline;
+                                            if (points != null) {
+                                                //Decode polyline and add points to list of route coordinates
+                                                List<com.google.maps.model.LatLng> coords = points.decodePath();
+                                                for (com.google.maps.model.LatLng coord : coords) {
+                                                    path.add(new LatLng(coord.lat, coord.lng));
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch(Exception ex) {
+        //            Log.d(TAG, ex.getMessage());
+                    ex.printStackTrace();
+                }
+
+                //Draw the polyline
+                if (path.size() > 0) {
+                    DirectionsLeg finalFirstDirectionsLeg = firstDirectionsLeg;
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            PolylineOptions opts = new PolylineOptions().addAll(path).color(Color.BLUE).width(5);
+                            gMap.addPolyline(opts);
+                            if (finalFirstDirectionsLeg != null) {
+                                updateMapViewInfoDistanceAndDuration(finalFirstDirectionsLeg.distance.humanReadable, finalFirstDirectionsLeg.duration.humanReadable, finalFirstDirectionsLeg.duration.inSeconds);
+                            }
+                        }
+                    });
+                }
+
+        //        gMap.getUiSettings().setZoomControlsEnabled(true);
+        //
+        //        gMap.moveCamera(CameraUpdateFactory.newLatLngZoom(zaragoza, 6));
+
+            }
+        }).start();
+    }
+
+    private void refreshMapViewSpinners() {
+        if (app.getSelectedCourseList().size() <= 0) {
+            return;
+        }
+        refreshMapViewFirstCourseSpinner();
+        refreshMapViewSecondCourseSpinner();
+    }
+
+    private void refreshMapViewFirstCourseSpinner() {
+        // Call this after GMap fragment is set up successfully
+        List<Course> selectedCourseList = app.getSelectedCourseList();
+        List<SingleCourse> selectedSingleCourseToShow = new ArrayList<>();
+        int indexToSelect = 0;
+        for (Course course: selectedCourseList) {
+            for (SingleCourse singleCourse: course.getSelectedSingleCourseList()) {
+                if (!singleCourse.getCourseElement("Place").equals("VRTL REMOTE") && singleCourse.getCourseLocationBuildingLatLng() != null) {
+                    if (mapViewSelectedFirstCourseCode != null && mapViewSelectedFirstCourseCode.equals(singleCourse.getCourseCode())) {
+                        indexToSelect = selectedSingleCourseToShow.size();
+                    }
+                    selectedSingleCourseToShow.add(singleCourse);
+                }
+            }
+        }
+        Log.d(TAG, "refreshMapViewFirstCourseSpinner: mapViewFirstCourseSpinner is going to be updated with list: " + selectedSingleCourseToShow + ", and with selectedIndex: " + indexToSelect);
+        mapViewFirstCourseSpinner.attachDataSource(selectedSingleCourseToShow);
+        mapViewFirstCourseSpinner.setSelectedIndex(indexToSelect);
+        mapViewFirstCourseSpinner.setOnSpinnerItemSelectedListener(new OnSpinnerItemSelectedListener() {
+            @Override
+            public void onItemSelected(NiceSpinner parent, View view, int position, long id) {
+                SingleCourse selectedSingleCourse = (SingleCourse) parent.getItemAtPosition(position);
+                mapViewSelectedFirstCourseCode = selectedSingleCourse.getCourseCode();
+                refreshMapViewGmapWithSelectedOptions();
+//                Log.d(TAG, "refreshMapViewFirstCourseSpinner: " + item + " has been selected.");
+            }
+        });
+    }
+
+    private void refreshMapViewSecondCourseSpinner() {
+        // Call this after GMap fragment is set up successfully
+        List<Course> selectedCourseList = app.getSelectedCourseList();
+        List<SingleCourse> selectedSingleCourseToShow = new ArrayList<>();
+        int indexToSelect = 0;
+        SingleCourse fakeSingleCourse = new SingleCourse();
+        fakeSingleCourse.setCourseName("Not selected");
+        selectedSingleCourseToShow.add(fakeSingleCourse);
+        for (Course course: selectedCourseList) {
+            for (SingleCourse singleCourse: course.getSelectedSingleCourseList()) {
+                if (!singleCourse.getCourseElement("Place").equals("VRTL REMOTE") && singleCourse.getCourseLocationBuildingLatLng() != null) {
+                    if (mapViewSelectedSecondCourseCode != null) {
+                        Log.d(TAG, "refreshMapViewSecondCourseSpinner: comparing saved: " + mapViewSelectedSecondCourseCode + " with new: " + singleCourse.getCourseCode() + ", are they equal: " + mapViewSelectedSecondCourseCode.equals(singleCourse.getCourseCode()));
+                    }
+                    if (mapViewSelectedSecondCourseCode != null && mapViewSelectedSecondCourseCode.equals(singleCourse.getCourseCode())) {
+                        indexToSelect = selectedSingleCourseToShow.size();
+                    }
+                    selectedSingleCourseToShow.add(singleCourse);
+                }
+            }
+        }
+        Log.d(TAG, "refreshMapViewSecondCourseSpinner: mapViewSecondCourseSpinner is going to be updated with list: " + selectedSingleCourseToShow + ", and with selectedIndex: " + indexToSelect);
+        mapViewSecondCourseSpinner.attachDataSource(selectedSingleCourseToShow);
+        mapViewSecondCourseSpinner.setSelectedIndex(indexToSelect);
+        mapViewSecondCourseSpinner.setOnSpinnerItemSelectedListener(new OnSpinnerItemSelectedListener() {
+            @Override
+            public void onItemSelected(NiceSpinner parent, View view, int position, long id) {
+                SingleCourse selectedSingleCourse = (SingleCourse) parent.getItemAtPosition(position);
+                mapViewSelectedSecondCourseCode = selectedSingleCourse.getCourseCode();
+                refreshMapViewGmapWithSelectedOptions();
+//                Log.d(TAG, "mapViewSecondCourseSpinner: " + item + " has been selected.");
+            }
+        });
     }
 
     private void processRecyclerView() {
@@ -434,7 +758,7 @@ public class MainActivity extends AppCompatActivity
                 //Log.i("Document ", "Going to prepare");
                 //avLoadingIndicatorView.smoothToShow();
                 swipeRefreshLayout.setRefreshing(true);
-            } else {
+            } else if (app.getCurrentModeInMainActivity() == 1) {
                 //Log.i("Document ", "Going to prepare");
                 swipeRefreshLayout.setRefreshing(true);
             }
@@ -486,11 +810,11 @@ public class MainActivity extends AppCompatActivity
         menu.clear();   // clear the menu every time so no item will be duplicated
         if(app.getCurrentModeInMainActivity() == 0){
             getMenuInflater().inflate(R.menu.list_view_menu, menu);
-        } else {
+        } else if (app.getCurrentModeInMainActivity() == 1) {
             getMenuInflater().inflate(R.menu.calendar_view_menu, menu);
             subMenuOfGoTo = menu.findItem(R.id.week_view_action_go_to_one_event).getSubMenu();
-            if(isFirstTimeRunning){
-                isFirstTimeRunning = false;
+            if(isFirstTimeRunningCalendarView){
+                isFirstTimeRunningCalendarView = false;
             }
             subMenuOfGoTo.clear();
             subMenuOfGoTo.add(0, R.id.week_view_action_go_to_today, 0,
@@ -517,7 +841,10 @@ public class MainActivity extends AppCompatActivity
                     menu.findItem(R.id.week_view_action_week_view).setChecked(true);
                     break;
             }
+        } else if (app.getCurrentModeInMainActivity() == 2) {
+            getMenuInflater().inflate(R.menu.map_view_menu, menu);
         }
+
         return super.onPrepareOptionsMenu(menu);
     }
 
@@ -546,7 +873,7 @@ public class MainActivity extends AppCompatActivity
                 app.clearNotificationSingleCourseList();
                 app.refreshNotificationService(this);
             }
-        } else {
+        } else if (app.getCurrentModeInMainActivity() == 1) {
             setupDateTimeInterpreter(id == R.id.week_view_action_week_view);
             //Log.i("Notification ", "The groupID is: " + item.getGroupId());
             if (item.getGroupId() == 1){
@@ -618,6 +945,15 @@ public class MainActivity extends AppCompatActivity
                         app.refreshNotificationService(this);
                         return true;
                 }
+            }
+        } else if (app.getCurrentModeInMainActivity() == 2) {
+            if (id == R.id.map_view_clear_all_marks) {
+                gMap.clear();
+                mapViewSelectedSecondCourseCode = null;
+                mapViewSecondCourseSpinner.setSelectedIndex(0);
+                refreshMapViewGmapWithSelectedOptions();
+            } else if (id == R.id.map_view_menu_center) {
+                centerMapViewAtUCI();
             }
         }
 
@@ -995,6 +1331,7 @@ public class MainActivity extends AppCompatActivity
                         }
                         return true;
                     });
+                    Log.d(TAG, "refreshSelectedCourseListForCalendarView: going to search for course: " + iCourse.getCourseName() + " with academicYearTerm: " + iCourse.getCourseAcademicYearTerm() + " with isSummer: " + iCourse.isSummer() + " with courseBeginYear: " + iCourse.getCourseBeginYear());
                     final OperationsWithCourse.SendRequestForCalendar sendRequestForCalendar = new OperationsWithCourse.SendRequestForCalendar(handler, app, iCourse.getCourseAcademicYearTerm(), iCourse.isSummer(), iCourse.getCourseBeginYear(), iCourse);
                     threadsForCalendar.add(sendRequestForCalendar);
                     sendRequestForCalendar.start();
@@ -1022,9 +1359,137 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    public int refreshSelectedCourseListWithLocationInfo(boolean ignoreFlag){
+        // Return 0, 1 for isInProgressOfRefreshingLocationInfo, 2 for isInProgressOfRefreshingSelectedCourseList
+        if(!ignoreFlag && app.isInProgressOfRefreshingLocationInfo()){
+            return 1;
+        }
+        app.setInProgressOfRefreshingLocationInfo(true);
+        Log.i(TAG, "refreshSelectedCourseListForCalendarView: Going to refresh the dates");
+        if(app.isInProgressOfRefreshingSelectedCourseList()){
+            return 2;
+        }
+        app.setInProgressOfRefreshingSelectedCourseList(true);
+
+        final List<OperationsWithCourse.SendRequestForCourseLocation> threadsForCourseLocation = new ArrayList<>();
+        for(final Course iCourse: app.getSelectedCourseList()){
+            for(String selectedCourseCode: iCourse.getSelectedCourseCodeList()){
+                if(iCourse.getSingleCourseLocationBuildingName(selectedCourseCode) != null){
+                    continue;
+                }
+                if (iCourse.getSingleCourse(selectedCourseCode).getCourseLocationWebsiteLink() == null || iCourse.getSingleCourse(selectedCourseCode).getCourseLocationWebsiteLink().isEmpty()) {
+                    continue;
+                }
+                Handler handler4CourseLocation = new Handler(Looper.getMainLooper(), msg -> {
+                    Bundle bundle = msg.getData();
+                    boolean isSuccess = bundle.getBoolean("is_success");
+                    if(isSuccess){
+                        String buildingName = bundle.getString("building_name");
+                        iCourse.setUpSingleCourseLocationBuildingName(selectedCourseCode, buildingName);
+//                        Log.d(TAG, "refreshSelectedCourseListWithLocationInfo: going to try getting latlng for buildingName: " + buildingName);
+                        return true;
+                    }
+                    return false;
+                });
+                OperationsWithCourse.SendRequestForCourseLocation sendRequestForCourseLocation =
+                        new OperationsWithCourse.SendRequestForCourseLocation(handler4CourseLocation, app, iCourse.getSingleCourse(selectedCourseCode).getCourseLocationWebsiteLink());
+                threadsForCourseLocation.add(sendRequestForCourseLocation);
+                sendRequestForCourseLocation.start();
+            }
+        }
+        new Thread(() -> {
+            boolean endFlag = false;
+            while (!endFlag) {
+                if(threadsForCourseLocation.isEmpty()){
+                    break;
+                }
+                for (OperationsWithCourse.SendRequestForCourseLocation thread : threadsForCourseLocation) {
+                    endFlag = !thread.getRunningFlag();
+                    if (!endFlag) {
+                        break;
+                    }
+                }
+                //wait(1000);
+            }
+//            Log.i(TAG, "refreshSelectedCourseListWithLocationInfo: finishing refreshing course location building names");
+            app.saveSelectedCourseListData();
+            app.setInProgressOfRefreshingSelectedCourseList(false);
+            refreshSelectedCourseListWithLatLng(true);
+        }).start();
+        return 0;
+    }
+
+    public int refreshSelectedCourseListWithLatLng(boolean ignoreFlag){
+        // Return 0, 1 for isInProgressOfRefreshingLocationInfo, 2 for isInProgressOfRefreshingSelectedCourseList
+        if(!ignoreFlag && app.isInProgressOfRefreshingLocationInfo()){
+            return 1;
+        }
+        app.setInProgressOfRefreshingLocationInfo(true);
+        Log.i(TAG, "refreshSelectedCourseListWithLatLng: Going to refresh the course location LatLng");
+        if(app.isInProgressOfRefreshingSelectedCourseList()){
+            return 2;
+        }
+        app.setInProgressOfRefreshingSelectedCourseList(true);
+
+        final List<OperationsWithMap.SendRequestForGeoLocation> threadsForCourseLocation = new ArrayList<>();
+        for(final Course iCourse: app.getSelectedCourseList()){
+            for(String selectedCourseCode: iCourse.getSelectedCourseCodeList()){
+                if(iCourse.getSingleCourse(selectedCourseCode).getCourseLocationBuildingLatLng() != null
+                        || iCourse.getSingleCourse(selectedCourseCode).getCourseLocationBuildingName() == null
+                        || iCourse.getSingleCourse(selectedCourseCode).getCourseLocationBuildingName().isEmpty()
+                ){
+                    continue;
+                }
+                Handler handler4CourseLocation = new Handler(Looper.getMainLooper(), msg -> {
+                    Bundle bundle = msg.getData();
+                    boolean isSuccess = bundle.getBoolean("is_success");
+                    if(isSuccess){
+                        Log.d(TAG, "refreshSelectedCourseListWithLatLng: for buildingName: "
+                                + iCourse.getSingleCourseLocationBuildingName(selectedCourseCode)
+                                + ", the LatLng is: (" + bundle.getDouble("latitude") + ", "
+                                + bundle.getDouble("longitude") + ")");
+                        iCourse.getSingleCourse(selectedCourseCode).setCourseLocationBuildingLatLng(bundle.getDouble("latitude"), bundle.getDouble("longitude"));
+                        return true;
+                    }
+                    return false;
+                });
+                OperationsWithMap.SendRequestForGeoLocation sendRequestForCourseLocation =
+                        new OperationsWithMap.SendRequestForGeoLocation(handler4CourseLocation,
+                                iCourse.getSingleCourseLocationBuildingName(selectedCourseCode),
+                                "irvine");  // Well...assume UCI is in Irvine...
+                threadsForCourseLocation.add(sendRequestForCourseLocation);
+                sendRequestForCourseLocation.start();
+            }
+        }
+        new Thread(() -> {
+            boolean endFlag = false;
+            while (!endFlag) {
+                if(threadsForCourseLocation.isEmpty()){
+                    break;
+                }
+                for (OperationsWithMap.SendRequestForGeoLocation thread : threadsForCourseLocation) {
+                    endFlag = !thread.getRunningFlag();
+                    if (!endFlag) {
+                        break;
+                    }
+                }
+                //wait(1000);
+            }
+            Log.i(TAG, "refreshSelectedCourseListWithLatLng: finishing refreshing course location LatLng");
+            app.saveSelectedCourseListData();
+            app.setInProgressOfRefreshingSelectedCourseList(false);
+            app.setInProgressOfRefreshingLocationInfo(false);
+        }).start();
+        return 0;
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        gMap = googleMap;
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
     }
-
 }

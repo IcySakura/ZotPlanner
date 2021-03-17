@@ -67,60 +67,62 @@ public class SelectedCourseListAdapter extends RecyclerView.Adapter<SelectedCour
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.selected_course_list_item, parent, false);
         final ViewHolder holder = new ViewHolder(view);
 
-        holder.subItem.setOnExpansionUpdateListener((expansionFraction, state) -> {
-            //Log.d(TAG, "onCreateViewHolder: updating subItem: expansionFraction: " + expansionFraction + ", state: " + state);
-            int position = holder.getAdapterPosition();
-
-            // A really stupid method to refresh the selected course list, should be changed later to improve
-            // performance of the adapter (also, there is one similar below!)
-            //mCourseList = this.app.getSelectedCourseList();
-
-            if(position == -1){
-                return;
-            }
-
-//            for(Course course: mCourseList){
-//                Log.d(TAG, "onCreateViewHolder: showing course(" + course.getCourseName() + "): " +
-//                        course.getSelectedCourseCodeList());
+//        holder.subItem.setOnExpansionUpdateListener((expansionFraction, state) -> {
+////            Log.d(TAG, "onCreateViewHolder: updating subItem: expansionFraction: " + expansionFraction + ", state: " + state);
+//            int position = holder.getAdapterPosition();
+//
+//            // A really stupid method to refresh the selected course list, should be changed later to improve
+//            // performance of the adapter (also, there is one similar below!)
+//            //mCourseList = this.app.getSelectedCourseList();
+//
+//            if(position == -1){
+//                return;
 //            }
-            Log.d(TAG, "onCreateViewHolder: the size of mCourseList is: " + mCourseList.size() +
-                    ", and the position is: " + position);
-
-            Course course = mCourseList.get(position);
-            switch (state){
-                case 0:
-                    course.setExpandedOnSelectedCourseList(false);
-                    course.setExpandingOnSelectedCourseList(false);
-                    // Need to save state of expanded here (or other place which can improve performance if possible)
-                    app.updateCourseWithNewExpandedStateInSelectedCourseList(course);
-                    break;
-                case 1:
-                    course.setExpandedOnSelectedCourseList(false);
-                    course.setExpandingOnSelectedCourseList(true);
-                    break;
-                case 2:
-                    course.setExpandedOnSelectedCourseList(true);
-                    course.setExpandingOnSelectedCourseList(true);
-                    // Need to save state of expanded here (or other place which can improve performance if possible)
-                    app.updateCourseWithNewExpandedStateInSelectedCourseList(course);
-                    break;
-                case 3:
-                    course.setExpandedOnSelectedCourseList(true);
-                    course.setExpandingOnSelectedCourseList(false);
-                    break;
-            }
-        });
+//
+////            for(Course course: mCourseList){
+////                Log.d(TAG, "onCreateViewHolder: showing course(" + course.getCourseName() + "): " +
+////                        course.getSelectedCourseCodeList());
+////            }
+//            Log.d(TAG, "onCreateViewHolder: the size of mCourseList is: " + mCourseList.size() +
+//                    ", and the position is: " + position);
+//
+//            Course course = mCourseList.get(position);
+//            switch (state){
+//                case 0:
+//                    course.setExpandedOnSelectedCourseList(false);
+//                    course.setExpandingOnSelectedCourseList(false);
+//                    // Need to save state of expanded here (or other place which can improve performance if possible)
+//                    app.updateCourseWithNewExpandedStateInSelectedCourseList(course);
+//                    break;
+//                case 1:
+//                    course.setExpandedOnSelectedCourseList(false);
+//                    course.setExpandingOnSelectedCourseList(true);
+//                    break;
+//                case 2:
+//                    course.setExpandedOnSelectedCourseList(true);
+//                    course.setExpandingOnSelectedCourseList(true);
+//                    // Need to save state of expanded here (or other place which can improve performance if possible)
+//                    app.updateCourseWithNewExpandedStateInSelectedCourseList(course);
+//                    break;
+//                case 3:
+//                    course.setExpandedOnSelectedCourseList(true);
+//                    course.setExpandingOnSelectedCourseList(false);
+//                    break;
+//            }
+//        });
 
         holder.courseView.setOnClickListener(v -> {
             Log.d(TAG, "onCreateViewHolder: expand animation start");
-            int position = holder.getAdapterPosition();
+            int position = holder.getBindingAdapterPosition();
             Course course = mCourseList.get(position);
+            course.setExpandedOnSelectedCourseList(!course.isExpandedOnSelectedCourseList());
+//            Log.d(TAG, "onCreateViewHolder: the new isExpandedOnSelectedCourseList is: " + course.isExpandedOnSelectedCourseList());
             holder.subItem.toggle();
 
             int startDegrees = (int)(180 * holder.subItem.getExpansion());
             //Log.d(TAG, "The animation start from degrees: " + startDegrees);
             // Here the animation should be opposite
-            if(!course.isExpandedOnSelectedCourseList()){
+            if(course.isExpandedOnSelectedCourseList()){
 
                 Log.d(TAG, "Going to prepare animation: from: " + startDegrees + ", to: " + 180);
                 prepareRotateAnimation(startDegrees, 180);
