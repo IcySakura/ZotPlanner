@@ -7,10 +7,6 @@ For UCI Students only.
 
 Please feel free to compile the application by yourself.
 
-# Be aware that you should contact me first before you make any change to this project. #
-If you want to contribute to this project, please feel free to send email to me with what you can contribute to this project.
-E-mail: lyx981mike@gmail.com
-
 Avaibable in Chinese, English, and Japanese.
 
 Latest Version: Beta v1.3.1 (Beta 1)
