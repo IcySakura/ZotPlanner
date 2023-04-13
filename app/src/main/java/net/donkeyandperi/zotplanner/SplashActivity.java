@@ -8,9 +8,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.wang.avi.AVLoadingIndicatorView;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -21,7 +21,7 @@ public class SplashActivity extends AppCompatActivity {
     private MyApp app;
     private Context context = this;
     private Handler handler;
-    private AVLoadingIndicatorView avi;
+    private CircularProgressIndicator cpiView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +30,7 @@ public class SplashActivity extends AppCompatActivity {
         app.setLanguage(context);
         setContentView(R.layout.activity_splash);
 
-        avi = (AVLoadingIndicatorView) findViewById(R.id.splash_activity_loading_avi);
+        cpiView = (CircularProgressIndicator) findViewById(R.id.splash_activity_loading_cpi);
 
         List<Course> selectedCourseList = app.getSelectedCourseList();
         Log.i("SelectedCourseListSize ", String.valueOf(selectedCourseList.size()));
@@ -99,7 +99,7 @@ public class SplashActivity extends AppCompatActivity {
             @Override
             public void run() {
                 Log.i("Document ", "Going to prepare");
-                avi.smoothToShow();
+                cpiView.show();
             }
         });
     }
@@ -108,7 +108,6 @@ public class SplashActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                //avi.smoothToHide();
                 Intent intent = new Intent(SplashActivity.this, MainActivity.class);
                 //intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 app.setIsCurrentlyProcessingSelectedListRecyclerview(true);

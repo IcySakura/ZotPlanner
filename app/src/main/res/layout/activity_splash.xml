@@ -13,13 +13,12 @@
         android:orientation="horizontal"
         android:layout_gravity="center_horizontal">
 
-        <com.wang.avi.AVLoadingIndicatorView
-            android:id="@+id/splash_activity_loading_avi"
-            android:visibility="gone"
+        <com.google.android.material.progressindicator.CircularProgressIndicator
+            android:id="@+id/splash_activity_loading_cpi"
+            android:visibility="visible"
             android:paddingTop="?attr/actionBarSize"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            app:indicatorName="LineScaleIndicator"
             app:indicatorColor="#000000"
             android:paddingBottom="100dp"
             android:layout_gravity="bottom"

@@ -13,9 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.wang.avi.AVLoadingIndicatorView;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -25,7 +25,7 @@ public class CourseList extends AppCompatActivity {
 
     private MyApp app;
     private Handler handler;
-    AVLoadingIndicatorView avLoadingIndicatorView;
+    CircularProgressIndicator cpiView;
     RecyclerView recyclerView;
     Context context = this;
 
@@ -37,7 +37,7 @@ public class CourseList extends AppCompatActivity {
         app = (MyApp) getApplication();
         recyclerView = (RecyclerView) findViewById(R.id.course_list_recycler_view);
         Toolbar toolbar = (Toolbar) findViewById(R.id.course_list_toolbar);
-        avLoadingIndicatorView = (AVLoadingIndicatorView) findViewById(R.id.course_list_loading_avi);
+        cpiView = (CircularProgressIndicator) findViewById(R.id.course_list_loading_cpi);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -87,7 +87,7 @@ public class CourseList extends AppCompatActivity {
             @Override
             public void run() {
                 Log.i("Document ", "Going to prepare");
-                avLoadingIndicatorView.smoothToShow();
+                cpiView.show();
                 Log.i("Document ", "Going to prepare");
             }
         });
@@ -97,7 +97,7 @@ public class CourseList extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                avLoadingIndicatorView.hide();
+                cpiView.hide();
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
                 recyclerView.setLayoutManager(linearLayoutManager);
                 CourseListAdapter courseListAdapter = new CourseListAdapter(app.getCourseList(), app);
@@ -110,7 +110,7 @@ public class CourseList extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                avLoadingIndicatorView.smoothToHide();
+                cpiView.hide();
                 Log.i("Document ", "Failed");
             }
         });

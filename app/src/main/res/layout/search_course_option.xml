@@ -7,13 +7,11 @@
     tools:context=".SearchCourseOption"
     android:animateLayoutChanges="true">
 
-    <com.wang.avi.AVLoadingIndicatorView
-        android:id="@+id/search_option_loading_avi"
+    <com.google.android.material.progressindicator.CircularProgressIndicator
+        android:id="@+id/search_option_loading_cpi"
         android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:indicatorName="LineScaleIndicator"
-        app:indicatorColor="#000000"
         android:layout_gravity="center"
         />
 

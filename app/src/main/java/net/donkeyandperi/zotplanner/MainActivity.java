@@ -756,7 +756,6 @@ public class MainActivity extends AppCompatActivity
         runOnUiThread(() -> {
             if(app.getCurrentModeInMainActivity() == 0){
                 //Log.i("Document ", "Going to prepare");
-                //avLoadingIndicatorView.smoothToShow();
                 swipeRefreshLayout.setRefreshing(true);
             } else if (app.getCurrentModeInMainActivity() == 1) {
                 //Log.i("Document ", "Going to prepare");
@@ -768,7 +767,6 @@ public class MainActivity extends AppCompatActivity
     private void endLoadingAnimationQuickSuccess() {
         runOnUiThread(() -> {
             if(app.getCurrentModeInMainActivity() == 0){
-                //avLoadingIndicatorView.hide();
                 Log.d(TAG, "Before notifying data changed: " + app.getSelectedCourseCodeList());
                 List<Course> tempCourseList = app.getSelectedCourseList();
                 for (Course course: tempCourseList){

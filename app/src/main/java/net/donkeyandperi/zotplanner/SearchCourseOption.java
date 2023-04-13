@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.progressindicator.CircularProgressIndicator;
 import com.google.android.material.snackbar.Snackbar;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,14 +17,12 @@ import android.view.MenuItem;
 import android.widget.LinearLayout;
 
 import com.jaredrummler.materialspinner.MaterialSpinner;
-import com.wang.avi.AVLoadingIndicatorView;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SearchCourseOption extends AppCompatActivity {
     private MyApp app;
-    AVLoadingIndicatorView avLoadingIndicatorView;
     private int currentDeptChoice = 0;
     private int currentQuarterChoice = 0;
     private int currentGeChoice = 0;
@@ -34,7 +33,7 @@ public class SearchCourseOption extends AppCompatActivity {
     private List<String> levelList;
     private FloatingActionButton fab;
     private LinearLayout searchOptionLinearLayout;
-    private AVLoadingIndicatorView avi;
+    private CircularProgressIndicator cpiView;
     private Context context = this;
 
     @Override
@@ -45,7 +44,7 @@ public class SearchCourseOption extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.content_main_toolbar);
         app = (MyApp) getApplication();
         searchOptionLinearLayout = (LinearLayout) findViewById(R.id.search_option_linearlayout);
-        avi = (AVLoadingIndicatorView) findViewById(R.id.search_option_loading_avi);
+        cpiView = (CircularProgressIndicator) findViewById(R.id.search_option_loading_cpi);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
@@ -209,7 +208,7 @@ public class SearchCourseOption extends AppCompatActivity {
             public void run() {
                 fab.hide();
                 searchOptionLinearLayout.setVisibility(View.GONE);
-                avi.smoothToShow();
+                cpiView.show();
             }
         });
     }
@@ -218,7 +217,7 @@ public class SearchCourseOption extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                avi.smoothToHide();
+                cpiView.hide();
                 fab.show();
                 searchOptionLinearLayout.setVisibility(View.VISIBLE);
                 setUpSpinner();
