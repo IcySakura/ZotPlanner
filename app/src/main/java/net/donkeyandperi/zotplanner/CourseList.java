@@ -14,18 +14,20 @@ import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 
 import com.google.android.material.progressindicator.CircularProgressIndicator;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class CourseList extends AppCompatActivity {
 
     private MyApp app;
     private Handler handler;
-    CircularProgressIndicator cpiView;
+    LinearProgressIndicator lpiView;
     RecyclerView recyclerView;
     Context context = this;
 
@@ -37,15 +39,15 @@ public class CourseList extends AppCompatActivity {
         app = (MyApp) getApplication();
         recyclerView = (RecyclerView) findViewById(R.id.course_list_recycler_view);
         Toolbar toolbar = (Toolbar) findViewById(R.id.course_list_toolbar);
-        cpiView = (CircularProgressIndicator) findViewById(R.id.course_list_loading_cpi);
+        lpiView = (LinearProgressIndicator) findViewById(R.id.course_list_loading_lpi);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
         startLoadingAnimation();
 
-        DividerItemDecoration divider = new DividerItemDecoration(this,DividerItemDecoration.VERTICAL);
-        divider.setDrawable(ContextCompat.getDrawable(this,R.drawable.course_list_rec_line));
-        recyclerView.addItemDecoration(divider);
+//        DividerItemDecoration divider = new DividerItemDecoration(this,DividerItemDecoration.VERTICAL);
+//        divider.setDrawable(Objects.requireNonNull(ContextCompat.getDrawable(this, R.drawable.course_list_rec_line)));
+//        recyclerView.addItemDecoration(divider);
         //recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
 
         processorRecyclerView();
@@ -87,7 +89,7 @@ public class CourseList extends AppCompatActivity {
             @Override
             public void run() {
                 Log.i("Document ", "Going to prepare");
-                cpiView.show();
+                lpiView.show();
                 Log.i("Document ", "Going to prepare");
             }
         });
@@ -97,7 +99,7 @@ public class CourseList extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                cpiView.hide();
+                lpiView.hide();
                 LinearLayoutManager linearLayoutManager = new LinearLayoutManager(context);
                 recyclerView.setLayoutManager(linearLayoutManager);
                 CourseListAdapter courseListAdapter = new CourseListAdapter(app.getCourseList(), app);
@@ -110,7 +112,7 @@ public class CourseList extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                cpiView.hide();
+                lpiView.hide();
                 Log.i("Document ", "Failed");
             }
         });
