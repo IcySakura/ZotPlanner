@@ -1,3 +1,5 @@
+Note: this project has been archived as I do not have time to maintain it. Most codes should still work, but fixes are needed if you want everything to run smoothly. If you are interested in continuing this project, please feel free to [reach out to me](https://lab.donkeyandperi.net/~yuxinliu/index.php).
+
 # ZotPlanner
 
 Download it now from Google Play!
